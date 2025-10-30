@@ -4,7 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class job_post extends Model
+class JobPost extends Model
 {
-    //
+    
 }

@@ -15,7 +15,7 @@ return new class extends Migration
             $table->unsignedBigInteger('job_post_id');
             $table->unsignedBigInteger('job_seeker_id');
             $table->date('apply_date');
-            $table->boolean('is_accept');
+            $table->enum('apply_status', ['pending', 'approved', 'rejected', 'expired'])->default('pending');
             $table->timestamps();
 
             $table->foreign('job_post_id')->references('id')->on('job_post')->onDelete('cascade');
