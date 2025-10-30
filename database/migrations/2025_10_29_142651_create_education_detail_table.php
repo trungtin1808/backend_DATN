@@ -12,7 +12,8 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('education_detail', function (Blueprint $table) {
-            $table->unsignedBigInteger('id');
+            $table->id();
+            $table->unsignedBigInteger('job_seeker_id');
             $table->string('major');
             $table->string('certificate_degree_name');
             $table->string('institute_university_name');
@@ -21,8 +22,7 @@ return new class extends Migration
             $table->decimal('cgpa');
             $table->timestamps();
 
-            $table->primary(['id','major','certificate_degree_name']);
-            $table->foreign('id')->references('id')->on('job_seeker')->onDelete('cascade');
+            $table->foreign('job_seeker_id')->references('id')->on('job_seeker')->onDelete('cascade');
         });
     }
 

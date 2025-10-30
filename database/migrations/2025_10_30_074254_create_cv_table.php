@@ -13,11 +13,11 @@ return new class extends Migration
     {
         Schema::create('cv', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('cd_by_id');
+            $table->unsignedBigInteger('job_seeker_id');
             $table->string('link_cv');
             $table->timestamps();
 
-            $table->foreign('cd_by_id')->references('id')->on('job_seeker')->onDelete('cascade');
+            $table->foreign('job_seeker_id')->references('id')->on('job_seeker')->onDelete('cascade');
         });
     }
 

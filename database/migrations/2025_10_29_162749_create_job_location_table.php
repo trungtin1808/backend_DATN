@@ -12,13 +12,14 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('job_location', function (Blueprint $table) {
-            $table->unsignedBigInteger('id')->primary();
+            $table->id();
+            $table->unsignedBigInteger('job_post_id');
             $table->string('street_address');
             $table->string('state');
             $table->string('city');
             $table->timestamps();
 
-            $table->foreign('id')->references('id')->on('job_post')->onDelete('cascade');
+            $table->foreign('job_post_id')->references('id')->on('job_post')->onDelete('cascade');
 
         });
     }

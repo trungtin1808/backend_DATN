@@ -20,7 +20,7 @@ return new class extends Migration
             $table->string('password');
             $table->timestamp('last_login_at')->nullable();
             $table->string('role');
-            $table->boolean('active');
+            $table->boolean('active')->default(true);
             $table->rememberToken();
             $table->timestamps();
 

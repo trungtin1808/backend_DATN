@@ -12,7 +12,8 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('job_seeker', function (Blueprint $table) {
-            $table->unsignedBigInteger('id')->primary();
+            $table->id();
+            $table->unsignedBigInteger('user_id');
             $table->string('name');
             $table->enum('gender', ['male', 'female', 'other'])->nullable();
             $table->string('email')->unique();
@@ -20,7 +21,7 @@ return new class extends Migration
             $table->date('date_of_birth');
             $table->string('image');
             $table->timestamps();
-            $table->foreign('id')->references('id')->on('users')->onDelete('cascade');
+            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
         });
     }
 

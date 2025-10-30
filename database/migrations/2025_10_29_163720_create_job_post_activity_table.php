@@ -12,6 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('job_post_activity', function (Blueprint $table) {
+            $table->id();
             $table->unsignedBigInteger('job_post_id');
             $table->unsignedBigInteger('job_seeker_id');
             $table->date('apply_date');
