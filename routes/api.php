@@ -3,6 +3,7 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\UserController;
 
 
 
@@ -16,6 +17,7 @@ Route::group([
     Route::post('register', [AuthController::class,'register']);
 
 });
+
 
 
 
@@ -56,3 +58,13 @@ Route::group([
     Route::get('profile', [AuthController::class,'profile']);
 
 });
+
+
+Route::group([
+    'middleware' => 'api',
+    'prefix' => 'admin',
+], function ($router) {
+    Route::apiResource('users', UserController::class);
+});
+
+
