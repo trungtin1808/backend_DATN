@@ -15,9 +15,11 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('job_post_id');
             $table->unsignedBigInteger('job_seeker_id');
+            $table->timestamp('saved_at');
             $table->timestamps();
 
-    
+            $table->unique(['job_seeker_id', 'job_post_id']);
+            
             $table->foreign('job_post_id')->references('id')->on('job_post')->onDelete('cascade');
             $table->foreign('job_seeker_id')->references('id')->on('job_seeker')->onDelete('cascade');
         });

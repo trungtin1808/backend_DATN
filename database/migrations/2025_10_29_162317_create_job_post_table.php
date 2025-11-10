@@ -13,19 +13,23 @@ return new class extends Migration
     {
         Schema::create('job_post', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('post_by_id');
+            $table->unsignedBigInteger('employer_id');
             $table->unsignedBigInteger('job_type_id');
+            $table->unsignedBigInteger('category_id');
             $table->string('job_title');
             $table->string('job_description');
-            $table->enum('job_status', ['pending', 'approved', 'rejected', 'expired'])->default('pending');
-            $table->date('expire');
-            $table->date('date_receive_application');
+            $table->enum('job_post_status', ['pending', 'approved', 'rejected', 'expired'])->default('pending');
+            $table->date('post_date');
+            $table->date('expire_date');
             $table->unsignedBigInteger('salary');
-            $table->unsignedBigInteger('category_id');
             $table->timestamp('approve_at')->nullable();
             $table->timestamps();
 
-            $table->foreign('post_by_id')->references('id')->on('company')->onDelete('cascade');
+            $table->string('street_address');
+            $table->string('state');
+            $table->string('city');
+
+            $table->foreign('employer_id')->references('id')->on('company')->onDelete('cascade');
             $table->foreign('job_type_id')->references('id')->on('job_type')->onDelete('cascade');
             $table->foreign('category_id')->references('id')->on('category')->onDelete('cascade');
 

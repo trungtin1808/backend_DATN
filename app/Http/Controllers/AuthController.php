@@ -8,6 +8,8 @@ use Tymon\JWTAuth\Facades\JWTAuth;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 use App\Http\Requests\RegisterRequest;
+use App\Models\JobSeeker;
+use App\Models\Employer;
 
 
 
@@ -15,7 +17,8 @@ class AuthController extends \Illuminate\Routing\Controller
 {
 
     public function register(RegisterRequest $request)
-    {     
+    {   
+        
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
@@ -23,6 +26,26 @@ class AuthController extends \Illuminate\Routing\Controller
             'password' => Hash::make($request->password),
             'role' => $request->role
         ]);
+
+        $user->refresh();
+
+        if($request->role == 'jobseeker'){
+            JobSeeker::create([
+            'user_id' => $user->id,
+            'name' => $user->name,
+            'email' => $user->email,
+            'phone' => $user->phone,
+            ]);
+        } else if($request->role == 'employer'){
+            Employer::create([
+            'user_id' => $user->id,
+            'company_name' => $user->name,
+            'company_email' => $user->email,
+            'company_phone' => $user->phone,
+            ]);
+
+
+        }
 
 
         return response()->json([
@@ -47,12 +70,7 @@ class AuthController extends \Illuminate\Routing\Controller
 
         return $this->respondWithToken($token, $refreshToken);
     }
-
-     public function profile()
-    {
-        return response()->json(auth()->user());
-    }
-
+    
     public function logout()
     {
         auth()->logout();

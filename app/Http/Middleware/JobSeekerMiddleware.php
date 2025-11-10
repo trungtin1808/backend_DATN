@@ -22,7 +22,7 @@ class JobSeekerMiddleware
         }
 
 
-        if ($user->role == "jobSeeker") {
+        if ($user->role == "jobseeker") {
             return $next($request);
            
         }

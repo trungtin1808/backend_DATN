@@ -15,16 +15,18 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('job_seeker_id');
             $table->date('start_date');
-            $table->date('end_date');
+            $table->date('end_date')->nullable();
             $table->string('job_title');
             $table->string('company_name');
             $table->string('job_location');
             $table->string('description');
             $table->timestamps();
+
             
             $table->foreign('job_seeker_id')->references('id')->on('job_seeker')->onDelete('cascade');
             
         });
+        DB::statement('ALTER TABLE experience_detail ADD CONSTRAINT start_before_end CHECK (start_date <= end_date)');
     }
 
     /**

@@ -3,68 +3,52 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
-use App\Http\Controllers\UserController;
+use App\Http\Controllers\JobSeekerProfileController;
+use App\Http\Controllers\EducationController;
+use App\Http\Controllers\ExperienceController;
+use App\Http\Controllers\CVController;
+use App\Http\Controllers\CertificateController;
 
+//public
 
-
-//route public
 Route::group([
     'middleware' => 'api'
 ], function ($router) {
 
     Route::post('login', [AuthController::class,'login']);
-    Route::post('refresh', [AuthController::class,'refresh']);
     Route::post('register', [AuthController::class,'register']);
 
 });
 
-
-
-
-
-// route chi danh cho user
+//jobseeker
 Route::group([
-
-    'middleware' => ['api','auth:api','jobseeker'],
-    'prefix' => 'user',
+    'middleware' => ['api','auth:api', 'jobseeker'],
+    'prefix' => 'jobseeker'
 ], function ($router) {
 
     Route::post('logout', [AuthController::class,'logout']);
-    Route::get('profile', [AuthController::class,'profile']);
+    Route::get('profile',[JobSeekerProfileController::class,'profile']);
+    Route::resource('profile/educations', EducationController::class);
+    Route::resource('profile/experiences', ExperienceController::class);
+    Route::resource('profile/cvs', CVController::class);
+    Route::resource('profile/certificates', CertificateController::class);
+    
 
 });
 
-//route chi danh cho employer
+//employer
 Route::group([
-
-    'middleware' => ['api','auth:api','employer'],
-    'prefix' => 'employer',
+    'middleware' => ['api','auth:api', 'employer'],
+    'prefix' => 'employer'
 ], function ($router) {
 
     Route::post('logout', [AuthController::class,'logout']);
-    Route::get('profile', [AuthController::class,'profile']);
+    
 
 });
 
 
-//route chi danh cho admin
-Route::group([
-
-    'middleware' => ['api','auth:api','admin'],
-    'prefix' => 'admin',
-], function ($router) {
-
-    Route::post('logout', [AuthController::class,'logout']);
-    Route::get('profile', [AuthController::class,'profile']);
-
-});
 
 
-Route::group([
-    'middleware' => 'api',
-    'prefix' => 'admin',
-], function ($router) {
-    Route::apiResource('users', UserController::class);
-});
 
 

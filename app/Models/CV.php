@@ -7,20 +7,15 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Notifications\Notifiable;
 use App\Models\JobSeeker;
 
-class ExperienceDetail extends Model
+class CV extends Model
 {
     use HasFactory, Notifiable;
 
-    protected $table = 'experience_detail';
+    protected $table = 'cv';
 
     protected $fillable = [
         'job_seeker_id',
-        'start_date',
-        'end_date',
-        'job_title',
-        'company_name',
-        'job_location',
-        'description',
+        'link_cv',
     ];
 
     public function jobSeeker()

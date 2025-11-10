@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('job_type', function (Blueprint $table) {
             $table->id();
-            $table->string('job_type');
+            $table->string('job_type')->unique();
             $table->timestamps();
         });
     }

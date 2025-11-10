@@ -7,20 +7,20 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Notifications\Notifiable;
 use App\Models\JobSeeker;
 
-class ExperienceDetail extends Model
+class Certificate extends Model
 {
     use HasFactory, Notifiable;
 
-    protected $table = 'experience_detail';
+    protected $table = 'certificate';
 
     protected $fillable = [
         'job_seeker_id',
-        'start_date',
-        'end_date',
-        'job_title',
-        'company_name',
-        'job_location',
-        'description',
+        'certificate_name',
+        'organization',
+        'issue_date',
+        'expire_date',
+        'certificate_url',
+        'score',
     ];
 
     public function jobSeeker()

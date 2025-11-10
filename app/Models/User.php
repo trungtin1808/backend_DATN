@@ -7,6 +7,8 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Tymon\JWTAuth\Contracts\JWTSubject;
+use App\Models\JobSeeker;
+use App\Models\Employer;
 class User extends Authenticatable implements JWTSubject
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
@@ -23,8 +25,24 @@ class User extends Authenticatable implements JWTSubject
         'phone',
         'password',
         'role',
-        'active'
+        'active',
+        'last_login_at',
+        'street_address',
+        'state',
+        'city',
     ];
+
+    public function jobSeeker()
+    {
+        return $this->hasOne(JobSeeker::class, 'user_id', 'id');
+        
+    }
+
+    public function employer()
+    {
+        return $this->hasOne(Employer::class, 'user_id', 'id');
+        
+    }
 
     /**
      * The attributes that should be hidden for serialization.

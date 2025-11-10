@@ -3,7 +3,6 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Contracts\Validation\Validator;
 
 class RegisterRequest extends FormRequest
 {
@@ -23,16 +22,19 @@ class RegisterRequest extends FormRequest
     public function rules(): array
     {
         return [
+            
             'name' => 'required|string|max:255|min:6',
-            'email' => 'required|string|email|max:255|unique:users',
+            'email' => 'required|string|email|max:255|unique:users,email',
+            'phone' => 'required|string|unique:users,phone',
             'password' => 'required|string|min:6|confirmed',
             'password_confirmation' => 'required',
-            'role' => 'required|in:jobSeeker,employer',
+            'role' => 'required|in:jobseeker,employer'
         ];
     }
 
     public function messages(): array
     {
+
         return [
             'required' => ':attribute bắt buộc phải nhập.',
             'min' => ':attribute phải có ít nhất :min ký tự.',
@@ -47,7 +49,8 @@ class RegisterRequest extends FormRequest
     {
         return [
             'name' => 'name',
-            'email' => 'Email',
+            'email' => 'email',
+            'phone' => 'phone',
             'password' => 'password',
             'role' => 'role'
         ];

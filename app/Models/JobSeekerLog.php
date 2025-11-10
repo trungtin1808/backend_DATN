@@ -5,23 +5,25 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Notifications\Notifiable;
+use App\Models\JobPost;
 use App\Models\JobSeeker;
 
-class ExperienceDetail extends Model
+class JobSeekerLog extends Model
 {
     use HasFactory, Notifiable;
 
-    protected $table = 'experience_detail';
+    protected $table = 'job_seeker_log';
 
     protected $fillable = [
+        'job_post_id',
         'job_seeker_id',
-        'start_date',
-        'end_date',
-        'job_title',
-        'company_name',
-        'job_location',
-        'description',
+        'saved_at',
     ];
+
+    public function jobPost()
+    {
+        return $this->belongsTo(JobPost::class, 'job_post_id', 'id');
+    }
 
     public function jobSeeker()
     {

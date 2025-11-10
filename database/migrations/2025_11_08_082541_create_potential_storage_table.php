@@ -11,16 +11,16 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('job_location', function (Blueprint $table) {
+        Schema::create('potential_storage', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('job_post_id');
-            $table->string('street_address');
-            $table->string('state');
-            $table->string('city');
+            $table->unsignedBigInteger('job_seeker_id');
             $table->timestamps();
 
+            $table->unique(['job_post_id', 'job_seeker_id']);
+            
+            $table->foreign('job_seeker_id')->references('id')->on('job_seeker')->onDelete('cascade');
             $table->foreign('job_post_id')->references('id')->on('job_post')->onDelete('cascade');
-
         });
     }
 
@@ -29,6 +29,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('job_location');
+        Schema::dropIfExists('potential_storage');
     }
 };

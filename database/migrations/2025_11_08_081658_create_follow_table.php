@@ -11,18 +11,17 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('job_post_activity', function (Blueprint $table) {
+        Schema::create('follow', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('job_post_id');
+            $table->unsignedBigInteger('employer_id');
             $table->unsignedBigInteger('job_seeker_id');
-            $table->timestamp('apply_date');
-            $table->enum('apply_status', ['pending', 'approved', 'rejected', 'expired'])->default('pending');
             $table->timestamps();
 
-            $table->unique(['job_seeker_id', 'job_post_id']);
-
-            $table->foreign('job_post_id')->references('id')->on('job_post')->onDelete('cascade');
+            $table->unique(['job_seeker_id', 'employer_id']);
             $table->foreign('job_seeker_id')->references('id')->on('job_seeker')->onDelete('cascade');
+            $table->foreign('employer_id')->references('id')->on('company')->onDelete('cascade');
+
+    
         });
     }
 
@@ -31,6 +30,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('job_post_activity');
+        Schema::dropIfExists('follow');
     }
 };
