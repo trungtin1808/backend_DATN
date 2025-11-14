@@ -15,7 +15,8 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('employer_id');
             $table->unsignedBigInteger('job_seeker_id');
-            $table->unsignedBigInteger('score');
+            $table->tinyInteger('rating')->unsigned()->comment('1 to 5');
+            $table->text('comment')->nullable();
             $table->timestamps();
 
             $table->unique(['job_seeker_id', 'employer_id']);

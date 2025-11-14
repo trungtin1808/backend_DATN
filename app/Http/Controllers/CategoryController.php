@@ -3,35 +3,33 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\CV;
+use App\Models\Category;
 
-class CVController extends Controller
+class CategoryController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        $jobSeeker = auth()->user()->jobSeeker;
+        $categories = Category::all();
 
-        $cvs = $jobSeeker->CVs;
-
-        if($cvs->isEmpty()){
+        if($categories->isEmpty()){
             return response()->json(
                 [
                     'success' => false,
-                    'message' => 'cv not found'
+                    'message' => 'Category not found'
                 ],
                 404
 
             );
         }
 
-         return response()->json(
+        return response()->json(
             [
                 'success' => true,
-                'data' => $cvs,
-                'message' => 'cv retrieved successfully'
+                'data' => $categories,
+                'message' => 'Category retrieved successfully'
             ]
         );
     }
@@ -41,19 +39,15 @@ class CVController extends Controller
      */
     public function store(Request $request)
     {
-        $jobSeeker =  auth()->user()->jobSeeker;
-
-        $cv = CV::create([
-            'job_seeker_id' => $jobSeeker->id,
-            'link_cv' => $request->link_cv
-
+         $category = Category::create([
+            'category_name' => $request->category_name,
         ]);
 
-        $cv->refresh();
+        $category->refresh();
 
         return response()->json([
-            'message' => 'cv created successfully',
-            'cv' => $cv,
+            'message' => 'Category created successfully',
+            'jobpost' => $category,
         ], 201);
     }
 
@@ -62,14 +56,13 @@ class CVController extends Controller
      */
     public function show(string $id)
     {
-        $jobSeeker = auth()->user()->jobSeeker;
-        $cv = $jobSeeker->CVs()->where('id',$id)->first();
+        $category = Category::find($id);
 
-        if(!$cv){
+        if(!$category){
             return response()->json(
                 [
                     'success' => false,
-                    'message' => 'cv not found'
+                    'message' => 'Category not found'
                 ],
                 404
 
@@ -78,10 +71,8 @@ class CVController extends Controller
 
         return response()->json([
         'success' => true,
-        'data' => $cv
+        'data' => $category
         ], 200);
-        
- 
     }
 
     /**
@@ -89,29 +80,25 @@ class CVController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        $jobSeeker = auth()->user()->jobSeeker;
-        $cv = $jobSeeker->CVs()->where('id',$id)->first();
+        $category = Category::find($id);
 
-       if(!$cv){
+        if(!$category){
             return response()->json(
                 [
                     'success' => false,
-                    'message' => 'cv not found'
+                    'message' => 'Category not found'
                 ],
                 404
 
             );
         }
 
-        if($request->has('link_cv')){
-            $cv->link_cv = $request->link_cv;
-        }
+        $category->category_name = $request->category_name;
+        $category->save();
 
-        $cv->save();
-        
          return response()->json([
             'success' => true,
-            'message' => 'cv updated successfully'
+            'message' => 'Category updated successfully'
             ], 200);
     }
 
@@ -120,27 +107,25 @@ class CVController extends Controller
      */
     public function destroy(string $id)
     {
-        $jobSeeker = auth()->user()->jobSeeker;
-        $cv = $jobSeeker->CVs()->where('id',$id)->first();
+        $category = Category::find($id);
 
-        if(!$cv){
+        if(!$category){
             return response()->json(
                 [
                     'success' => false,
-                    'message' => 'cv not found'
+                    'message' => 'Category not found'
                 ],
                 404
 
             );
         }
 
-        $cv->delete();
+        
+        $category->delete();
 
-        return response()->json([
+         return response()->json([
             'success' => true,
-            'message' => 'cv deleted successfully'
+            'message' => 'Category deleted successfully'
             ], 200);
-
-
     }
 }

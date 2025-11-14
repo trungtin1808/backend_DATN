@@ -3,37 +3,36 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\CV;
+use App\Models\JobType;
 
-class CVController extends Controller
+class JobTypeController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        $jobSeeker = auth()->user()->jobSeeker;
+        $jobTypes = JobType::all();
 
-        $cvs = $jobSeeker->CVs;
-
-        if($cvs->isEmpty()){
+        if($jobTypes->isEmpty()){
             return response()->json(
                 [
                     'success' => false,
-                    'message' => 'cv not found'
+                    'message' => 'JobType not found'
                 ],
                 404
 
             );
         }
 
-         return response()->json(
+        return response()->json(
             [
                 'success' => true,
-                'data' => $cvs,
-                'message' => 'cv retrieved successfully'
+                'data' => $jobTypes,
+                'message' => 'JobType retrieved successfully'
             ]
         );
+       
     }
 
     /**
@@ -41,20 +40,17 @@ class CVController extends Controller
      */
     public function store(Request $request)
     {
-        $jobSeeker =  auth()->user()->jobSeeker;
-
-        $cv = CV::create([
-            'job_seeker_id' => $jobSeeker->id,
-            'link_cv' => $request->link_cv
-
+         $jobType = JobType::create([
+            'job_type' => $request->job_type,
         ]);
 
-        $cv->refresh();
+        $jobType->refresh();
 
         return response()->json([
-            'message' => 'cv created successfully',
-            'cv' => $cv,
+            'message' => 'JobType created successfully',
+            'jobpost' => $jobType,
         ], 201);
+        
     }
 
     /**
@@ -62,14 +58,13 @@ class CVController extends Controller
      */
     public function show(string $id)
     {
-        $jobSeeker = auth()->user()->jobSeeker;
-        $cv = $jobSeeker->CVs()->where('id',$id)->first();
+        $jobType = JobType::find($id);
 
-        if(!$cv){
+        if(!$jobType){
             return response()->json(
                 [
                     'success' => false,
-                    'message' => 'cv not found'
+                    'message' => 'JobType not found'
                 ],
                 404
 
@@ -78,10 +73,9 @@ class CVController extends Controller
 
         return response()->json([
         'success' => true,
-        'data' => $cv
+        'data' => $jobType
         ], 200);
-        
- 
+
     }
 
     /**
@@ -89,29 +83,25 @@ class CVController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        $jobSeeker = auth()->user()->jobSeeker;
-        $cv = $jobSeeker->CVs()->where('id',$id)->first();
+        $jobType = JobType::find($id);
 
-       if(!$cv){
+        if(!$jobType){
             return response()->json(
                 [
                     'success' => false,
-                    'message' => 'cv not found'
+                    'message' => 'JobType not found'
                 ],
                 404
 
             );
         }
 
-        if($request->has('link_cv')){
-            $cv->link_cv = $request->link_cv;
-        }
+        $jobType->job_type = $request->job_type;
+        $jobType->save();
 
-        $cv->save();
-        
          return response()->json([
             'success' => true,
-            'message' => 'cv updated successfully'
+            'message' => 'jobtype updated successfully'
             ], 200);
     }
 
@@ -120,27 +110,26 @@ class CVController extends Controller
      */
     public function destroy(string $id)
     {
-        $jobSeeker = auth()->user()->jobSeeker;
-        $cv = $jobSeeker->CVs()->where('id',$id)->first();
+        $jobType = JobType::find($id);
 
-        if(!$cv){
+        if(!$jobType){
             return response()->json(
                 [
                     'success' => false,
-                    'message' => 'cv not found'
+                    'message' => 'JobType not found'
                 ],
                 404
 
             );
         }
 
-        $cv->delete();
+        
+        $jobType->delete();
 
-        return response()->json([
+         return response()->json([
             'success' => true,
-            'message' => 'cv deleted successfully'
+            'message' => 'jobtype deleted successfully'
             ], 200);
-
-
+        
     }
 }

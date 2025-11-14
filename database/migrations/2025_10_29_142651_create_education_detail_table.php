@@ -34,7 +34,7 @@ return new class extends Migration
 
             $table->foreign('job_seeker_id')->references('id')->on('job_seeker')->onDelete('cascade');
         });
-        DB::statement('ALTER TABLE education_detail ADD CONSTRAINT start_before_complete CHECK (start_date < complete_date)');
+        DB::statement('ALTER TABLE education_detail ADD CONSTRAINT start_before_complete CHECK (start_date <= complete_date)');
     }
 
     /**

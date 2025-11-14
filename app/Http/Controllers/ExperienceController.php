@@ -12,9 +12,9 @@ class ExperienceController extends Controller
      */
     public function index()
     {
-        $jobseeker = auth()->user()->jobSeeker;
+        $jobSeeker = auth()->user()->jobSeeker;
 
-        $experienceDetails = $jobseeker->experienceDetails;
+        $experienceDetails = $jobSeeker->experienceDetails;
 
         if($experienceDetails->isEmpty()){
             return response()->json(
@@ -42,10 +42,10 @@ class ExperienceController extends Controller
      */
     public function store(Request $request)
     {
-        $jobseeker =  auth()->user()->jobSeeker;
+        $jobSeeker =  auth()->user()->jobSeeker;
 
         $experienceDetail = ExperienceDetail::create([
-            'job_seeker_id' => $jobseeker->id,
+            'job_seeker_id' => $jobSeeker->id,
             'start_date' => $request->start_date,
             'end_date' => $request->end_date,
             'job_title' => $request->job_title,
@@ -70,7 +70,20 @@ class ExperienceController extends Controller
      */
     public function show(string $id)
     {
-        //
+        $jobSeeker = auth()->user()->jobSeeker;
+        $experienceDetail = $jobSeeker->experienceDetails()->where('id',$id)->first();
+
+        if(!$experienceDetail){
+            return response()->json([
+            'success' => false,
+            'message' => 'experiencedetail not found'
+            ], 404);
+        }
+
+        return response()->json([
+        'success' => true,
+        'data' => $experienceDetail
+        ], 200);
     }
 
     /**
@@ -78,7 +91,46 @@ class ExperienceController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        $jobSeeker = auth()->user()->jobSeeker;
+        $experienceDetail = $jobSeeker->experienceDetails()->where('id',$id)->first();
+
+        if(!$experienceDetail){
+            return response()->json([
+            'success' => false,
+            'message' => 'experiencedetail not found'
+            ], 404);
+        }
+
+        if($request->has('start_date')){
+            $experienceDetail->start_date = $request->start_date;
+        }
+
+        if($request->has('end_date')){
+            $experienceDetail->end_date = $request->end_date;
+        }
+
+        if($request->has('job_title')){
+            $experienceDetail->job_title = $request->job_title;
+        }
+
+        if($request->has('company_name')){
+            $experienceDetail->company_name = $request->company_name;
+        }
+
+        if($request->has('job_location')){
+            $experienceDetail->job_location = $request->job_location;
+        }
+
+        if($request->has('description')){
+            $experienceDetail->description = $request->description;
+        }
+
+        $experienceDetail->save();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'experiencedetail updated successfully'
+            ], 200);
     }
 
     /**
@@ -86,6 +138,22 @@ class ExperienceController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        $jobSeeker = auth()->user()->jobSeeker;
+        $experienceDetail = $jobSeeker->experienceDetails()->where('id',$id)->first();
+
+          if(!$experienceDetail){
+            return response()->json([
+            'success' => false,
+            'message' => 'experiencedetail not found'
+            ], 404);
+        }
+
+        $experienceDetail->delete();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'experiencedetail deleted successfully'
+            ], 200);
+        
     }
 }

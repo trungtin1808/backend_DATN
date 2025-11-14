@@ -19,6 +19,7 @@ class JobPostActivity extends Model
         'job_seeker_id',
         'apply_date',
         'apply_status',
+        'link_cv',
     ];
 
     public function jobPost()

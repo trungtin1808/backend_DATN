@@ -37,7 +37,7 @@ class Employer extends Model
         return $this->hasMany(JobPost::class, 'employer_id', 'id');
     }
 
-    public function reviews()
+    public function reviewsByJobSeekers()
     {
         return $this->hasMany(Review::class, 'employer_id', 'id');
     }

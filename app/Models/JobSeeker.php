@@ -68,7 +68,7 @@ class JobSeeker extends Model
         return $this->hasMany(JobSeekerLog::class, 'job_seeker_id', 'id');
     }
 
-    public function reviews()
+    public function reviewsForEmployers()
     {
         return $this->hasMany(Review::class, 'job_seeker_id', 'id');
     }

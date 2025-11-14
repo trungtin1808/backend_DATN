@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('certificate', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('job_seeker_id');
-            $table->string('certificate_name'); // Tên khóa học, ví dụ: Laravel API Course
+            $table->string('certificate_name')->nullable(); // Tên khóa học, ví dụ: Laravel API Course
             $table->string('organization')->nullable(); // Nơi cấp, ví dụ: Udemy, Coursera
             $table->date('issue_date')->nullable(); // Ngày hoàn thành
             $table->date('expire_date')->nullable(); // Nếu không có hạn -> nullable
@@ -26,6 +26,8 @@ return new class extends Migration
 
 
         });
+
+        DB::statement('ALTER TABLE certificate ADD CONSTRAINT issue_before_expire CHECK (issue_date <= expire_date)');
     }
 
     /**

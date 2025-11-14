@@ -26,10 +26,9 @@ class JobPost extends Model
         'job_title',
         'job_description',
         'job_post_status',
-        'post_date',
+        'job_post',
         'expire_date',
         'salary',
-        'approve_at',
         'street_address',
         'state',
         'city',
@@ -58,14 +57,33 @@ class JobPost extends Model
         return $this->hasMany(JobPostActivity::class, 'job_post_id', 'id');
     }
 
-    public function logs()
-    {
-        return $this->hasMany(JobSeekerLog::class, 'job_post_id', 'id');
-    }
+    // public function logs()
+    // {
+    //     return $this->hasMany(JobSeekerLog::class, 'job_post_id', 'id');
+    // }
 
     public function potentialStorages()
     {
         return $this->hasMany(PotentialStorage::class, 'job_post_id', 'id');
+    }
+
+     public function toCustomArray()
+    {
+        return [
+            'id' => $this->id,
+            'employer' => $this->employer->company_name,
+            'job_type' => $this->jobType->job_type,
+            'category' => $this->category->category_name,
+            'job_title' => $this->job_title,
+            'job_description' => $this->job_description,
+            'job_post_status' => $this->job_post_status,
+            'post_date' => $this->post_date,
+            'expire_date' => $this->expire_date,
+            'salary' => $this->salary,
+            'street_address' => $this->street_address,
+            'state' => $this->state,
+            'city' => $this->city,
+        ];
     }
     
 }

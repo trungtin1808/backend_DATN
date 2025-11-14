@@ -12,9 +12,9 @@ class CertificateController extends Controller
      */
     public function index()
     {
-        $jobseeker = auth()->user()->jobSeeker;
+        $jobSeeker = auth()->user()->jobSeeker;
 
-        $certificates = $jobseeker->Certificates;
+        $certificates = $jobSeeker->Certificates;
 
         if($certificates->isEmpty()){
             return response()->json(
@@ -41,16 +41,17 @@ class CertificateController extends Controller
      */
     public function store(Request $request)
     {
-        $jobseeker =  auth()->user()->jobSeeker;
+        $jobSeeker =  auth()->user()->jobSeeker;
 
         $certificate = Certificate::create([
-            'job_seeker_id' => $jobseeker->id,
+            'job_seeker_id' => $jobSeeker->id,
             'certificate_name' => $request->certificate_name,
             'organization' => $request->organization,
             'issue_date' => $request->issue_date,
             'expire_date' => $request->expire_date,
             'certificate_url' => $request->certificate_url,
             'score' => $request->score,
+            
 
         ]);
 
@@ -67,7 +68,22 @@ class CertificateController extends Controller
      */
     public function show(string $id)
     {
-        //
+        $jobSeeker =  auth()->user()->jobSeeker;
+        $certificate = $jobSeeker->Certificates()->where('id',$id)->first();
+
+        if(!$certificate){
+            return response()->json([
+            'success' => false,
+            'message' => 'Certificate not found'
+            ], 404);
+        }
+
+        return response()->json([
+        'success' => true,
+        'data' => $certificate
+        ], 200);
+        
+        
     }
 
     /**
@@ -75,7 +91,51 @@ class CertificateController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        $jobSeeker = auth()->user()->jobSeeker;
+        $certificate = $jobSeeker->Certificates()->where('id',$id)->first();
+
+        if(!$certificate){
+
+             return response()->json([
+            'success' => false,
+            'message' => 'Certificate not found'
+            ], 404);
+
+        }
+
+        if($request->has('certificate_name')){
+            $certificate->certificate_name = $request->certificate_name;
+        }
+
+        if($request->has('organization')){
+            $certificate->organization = $request->organization;
+        }
+
+        if($request->has('issue_date')){
+            $certificate->issue_date = $request->issue_date;
+        }
+
+        if($request->has('expire_date')){
+            $certificate->expire_date = $request->expire_date;
+        }
+
+        if($request->has('certificate_url')){
+            $certificate->certificate_url = $request->certificate_url;
+        }
+
+        if($request->has('score')){
+            $certificate->score = $request->score;
+        }
+
+        $certificate->save();
+
+
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Certificate updated successfully'
+            ], 200);
+
     }
 
     /**
@@ -83,6 +143,23 @@ class CertificateController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        $jobSeeker = auth()->user()->jobSeeker;
+        $certificate = $jobSeeker->Certificates()->where('id',$id)->first();
+
+        if(!$certificate){
+
+            return response()->json([
+            'success' => false,
+            'message' => 'Certificate not found'
+            ], 404);
+
+        }
+
+        $certificate->delete();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Certificate deleted successfully'
+            ], 200);
     }
 }

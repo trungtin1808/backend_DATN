@@ -15,8 +15,9 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('job_post_id');
             $table->unsignedBigInteger('job_seeker_id');
-            $table->timestamp('apply_date');
-            $table->enum('apply_status', ['pending', 'approved', 'rejected', 'expired'])->default('pending');
+            $table->timestamp('apply_date')->useCurrent();
+            $table->enum('apply_status', ['pending', 'approved', 'rejected', 'post-hidden', 'post-deleted','withdrawn'])->default('pending');
+            $table->string('link_cv');
             $table->timestamps();
 
             $table->unique(['job_seeker_id', 'job_post_id']);

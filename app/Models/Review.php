@@ -17,7 +17,8 @@ class Review extends Model
     protected $fillable = [
         'employer_id',
         'job_seeker_id',
-        'score',
+        'rating',
+        'comment',
     ];
 
     public function jobSeeker()
