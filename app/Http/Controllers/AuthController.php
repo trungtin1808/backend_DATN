@@ -30,20 +30,17 @@ class AuthController extends \Illuminate\Routing\Controller
         $user->refresh();
 
         if($request->role == 'jobseeker'){
+            $user->status = 'approved';
+            $user->save();
+
             JobSeeker::create([
             'user_id' => $user->id,
             'name' => $user->name,
             'email' => $user->email,
             'phone' => $user->phone,
             ]);
-        } else if($request->role == 'employer'){
-            Employer::create([
-            'user_id' => $user->id,
-            'company_name' => $user->name,
-            'company_email' => $user->email,
-            'company_phone' => $user->phone,
-            ]);
 
+            
 
         }
 
@@ -59,8 +56,23 @@ class AuthController extends \Illuminate\Routing\Controller
     {
         $credentials = request(['email', 'password']);
 
-        if (! $token = auth()->attempt($credentials)) {
-            return response()->json(['error' => 'Unauthorized'], 401);
+        $user = User::where('email', $credentials['email'])->first();
+
+        if (!$user) {
+            return response()->json(['error' => 'Email không tồn tại'], 401);
+        }
+
+        if ($user->status !== 'approved') {
+            return response()->json([
+                'success' => false,
+                'message' => 'Tài khoản chưa được duyệt hoac da bi ban'
+            ], 403);
+        }
+
+
+
+        if (!$token = auth()->attempt($credentials)) {
+            return response()->json(['error' => 'Sai mật khẩu'], 401);
         }
 
         

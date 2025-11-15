@@ -28,7 +28,7 @@ class RegisterRequest extends FormRequest
             'phone' => 'required|string|unique:users,phone',
             'password' => 'required|string|min:6|confirmed',
             'password_confirmation' => 'required',
-            'role' => 'required|in:jobseeker,employer'
+            'role' => 'required|in:jobseeker,employer,admin'
         ];
     }
 

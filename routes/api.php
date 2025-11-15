@@ -17,6 +17,15 @@ use App\Http\Controllers\PotentialStorageController;
 use App\Http\Controllers\JobSeekerLogController;
 use App\Http\Controllers\FollowController;
 use App\Http\Controllers\ReviewController;
+use App\Http\Controllers\ManagementUserController;
+use App\Http\Controllers\ManagementJobSeekerController;
+use App\Http\Controllers\ManagementEmployerController;
+use App\Http\Controllers\ManagementJobPostController;
+use App\Http\Controllers\PublicJobPostController;
+use App\Http\Controllers\PublicEmployerController;
+
+
+
 
 
 //public
@@ -25,7 +34,20 @@ Route::group([
 ], function ($router) {
 
     Route::post('login', [AuthController::class,'login']);
+
     Route::post('register', [AuthController::class,'register']);
+
+    Route::get('job-posts',[PublicJobPostController::class, 'jobPosts']);
+    Route::get('job-posts/{id}', [PublicJobPostController::class, 'show']);
+
+    Route::get('employers', [PublicEmployerController::class,'employers']);
+    Route::get('employers/{id}', [PublicEmployerController::class, 'show']);
+    Route::get('employers/{id}/followers', [FollowController::class,'followers']);
+    Route::get('employers/{id}/reviews',[ReviewController::class,'reviews']);
+
+
+   
+
 
 });
 
@@ -36,11 +58,16 @@ Route::group([
 ], function ($router) {
 
     Route::post('logout', [AuthController::class,'logout']);
+
     Route::get('profile',[JobSeekerProfileController::class,'profile']);
     Route::patch('profile',[JobSeekerProfileController::class,'update']);
+
     Route::resource('profile/educations', EducationController::class);
+
     Route::resource('profile/experiences', ExperienceController::class);
+
     Route::resource('profile/cvs', CVController::class);
+
     Route::resource('profile/certificates', CertificateController::class);
 
 
@@ -50,13 +77,12 @@ Route::group([
     Route::patch('jobseeker-applications/{jobPostId}',[JobPostActivityController::class,'updateForJobSeeker']);
 
 
-    Route::get('jobseekerlogs', [JobSeekerLogController::class,'jobSeekerLogs']);
-    Route::get('jobseekerlogs/{jobPostId}', [JobSeekerLogController::class,'show']);
     Route::post('job-posts/{id}', [JobSeekerLogController::class,'store']);
     Route::delete('job-posts/{id}',[JobSeekerLogController::class,'destroy']);
+    Route::get('jobseekerlogs', [JobSeekerLogController::class,'jobSeekerLogs']);
+    Route::get('jobseekerlogs/{jobPostId}', [JobSeekerLogController::class,'show']);
     Route::delete('jobseekerlogs/{jobPostId}',[JobSeekerLogController::class,'destroy']);
 
-    Route::get('employers/{id}/followers', [FollowController::class,'followers']);
     Route::post('employers/{id}/followers',[FollowController::class,'store']);
     Route::delete('employers/{id}/followers', [FollowController::class,'destroy']);
     Route::get('follow-employers',[FollowController::class,'followEmployers']);
@@ -64,7 +90,6 @@ Route::group([
     Route::delete('follow-employers/{id}',[FollowController::class,'destroy']);
     
 
-    Route::get('employers/{id}/reviews',[ReviewController::class,'reviews']);
     Route::post('employers/{id}/reviews', [ReviewController::class,'store']);
     Route::patch('employers/{id}/reviews',[ReviewController::class,'update']);
     Route::delete('employers/{id}/reviews', [ReviewController::class,'destroy']);
@@ -83,6 +108,7 @@ Route::group([
 ], function ($router) {
 
     Route::post('logout', [AuthController::class,'logout']);
+
     Route::get('profile',[EmployerProfileController::class,'profile']);
     Route::patch('profile',[EmployerProfileController::class,'update']);
 
@@ -126,15 +152,32 @@ Route::group([
 });
 
 //admin
-
 Route::group([
-    'middleware' => ['api'], // sau nay them vao middleware va auth:api
+    'middleware' => ['api', 'auth:api', 'admin'], 
     'prefix' => 'admin'
 ], function ($router) {
 
     Route::resource('job-types',JobTypeController::class);
+
     Route::resource('categories',CategoryController::class);
+
+    Route::get('users',[ManagementUserController::class, 'users']);
+    Route::get('users/{id}', [ManagementUserController::class, 'show']);
+    Route::patch('users/{id}', [ManagementUserController::class, 'update']);
+
+    Route::get('jobseekers', [ManagementJobSeekerController::class,'jobSeekers']);
+    Route::get('jobseekers/{id}', [ManagementJobSeekerController::class,'show']);
+
+    Route::get('employers', [ManagementEmployerController::class, 'employers']);
+    Route::get('employers/{id}', [ManagementEmployerController::class, 'show']);
+
+    Route::get('job-posts', [ManagementJobPostController::class, 'jobPosts']);
+    Route::get('job-posts/{id}', [ManagementJobPostController::class, 'show']);
+    Route::patch('job-posts/{id}', [ManagementJobPostController::class, 'update']);
+
     
+
+  
 });
 
 

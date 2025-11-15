@@ -18,7 +18,7 @@ return new class extends Migration
             $table->string('phone')->unique();
             $table->string('password');
             $table->enum('role', ['admin', 'employer', 'jobseeker']);
-            $table->boolean('active')->default(true);
+            $table->enum('status', ['pending', 'approved', 'rejected', 'banned'])->default('pending');
             $table->timestamp('last_login_at')->nullable();
 
             $table->string('street_address')->nullable();
