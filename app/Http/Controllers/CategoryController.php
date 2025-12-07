@@ -24,7 +24,7 @@ class CategoryController extends Controller
 
             );
         }
-
+        
         return response()->json(
             [
                 'success' => true,
@@ -33,6 +33,8 @@ class CategoryController extends Controller
             ]
         );
     }
+
+
 
     /**
      * Store a newly created resource in storage.

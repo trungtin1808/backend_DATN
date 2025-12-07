@@ -39,9 +39,9 @@ class AuthController extends \Illuminate\Routing\Controller
             'email' => $user->email,
             'phone' => $user->phone,
             ]);
-
-            
-
+        } elseif($request->role == 'admin'){
+            $user->status = 'approved';
+            $user->save();
         }
 
 
@@ -65,7 +65,7 @@ class AuthController extends \Illuminate\Routing\Controller
         if ($user->status !== 'approved') {
             return response()->json([
                 'success' => false,
-                'message' => 'Tài khoản chưa được duyệt hoac da bi ban'
+                'message' => 'Tài khoản chưa được duyệt hoac da bi vo hieu'
             ], 403);
         }
 
@@ -90,7 +90,7 @@ class AuthController extends \Illuminate\Routing\Controller
         return response()->json(['message' => 'Successfully logged out']);
     }
 
-     public function refresh()
+     public function refresh()//làm mới access token
     {
         $refreshToken = request()->refresh_token;
         try{
@@ -141,5 +141,7 @@ class AuthController extends \Illuminate\Routing\Controller
             'user' => auth()->user()
         ]);
     }
+
+    
 
 }

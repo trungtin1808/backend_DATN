@@ -22,7 +22,6 @@ return new class extends Migration
             $table->string('company_website_url')->unique()->nullable();
             $table->string('company_image')->default('employer_default.jpg');
             $table->timestamps();
-
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
         });
     }

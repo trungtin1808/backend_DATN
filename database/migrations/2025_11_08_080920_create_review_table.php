@@ -15,8 +15,8 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('employer_id');
             $table->unsignedBigInteger('job_seeker_id');
-            $table->tinyInteger('rating')->unsigned()->comment('1 to 5');
-            $table->text('comment')->nullable();
+            $table->tinyInteger('rating')->unsigned()->comment('1 to 5');// đánh giá chung (1 đến 5 điểm)
+            $table->text('comment')->nullable();// đanh giá chi tiết
             $table->timestamps();
 
             $table->unique(['job_seeker_id', 'employer_id']);

@@ -60,21 +60,21 @@ class ManagementUserController extends Controller
         $user->status = $request->status;
         $user->save();
 
-        if($request->role == 'employer'){
-            Employer::create([
+        if($user->role == 'employer'){
+            Employer::firstOrCreate([
             'user_id' => $user->id,
             'company_name' => $user->name,
             'company_email' => $user->email,
             'company_phone' => $user->phone,
             ]);
 
-
         }
 
         return response()->json([
-                'success' => true,
-                'message' => 'User updated successfully'
-            ], 200);
+            'success' => true,
+            'data' => $user, // data chứa user
+            'message' => 'Trạng thái đã được cập nhật'
+        ]);
 
 
     }

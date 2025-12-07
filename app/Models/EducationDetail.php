@@ -17,11 +17,11 @@ class EducationDetail extends Model
     
     protected $fillable = [
         'job_seeker_id',
-        'education_level',
-        'certificate_degree_name',
-        'institute_university_name',
-        'major',
-        'status',
+        'education_level',//'secondary', 'high_school', 'college', 'university', 'master', 'doctor'
+        'certificate_degree_name',//'cu nhan', 'thac si', 'tien si',...
+        'institute_university_name',//'DH Bach Khoa', 'DH Quoc Gia',...
+        'major',   //'CNTT', 'Marketing', 'Kinh Te',...
+        'status',//'completed', 'in_progress'
         'start_date',
         'complete_date',
         'cgpa',

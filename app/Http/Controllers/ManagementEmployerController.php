@@ -41,6 +41,6 @@ class ManagementEmployerController extends Controller
         ], 200);
     }
 
-    // them chuc nang bann/unban/duyet tai khoan
+    // them chuc nang bann/unban
     
 }

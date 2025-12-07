@@ -17,10 +17,10 @@ class ExperienceDetail extends Model
         'job_seeker_id',
         'start_date',
         'end_date',
-        'job_title',
-        'company_name',
-        'job_location',
-        'description',
+        'job_title',//'Ky su phan mem', 'Chuyen vien Marketing',...
+        'company_name',//'FPT Software', 'Viettel', 'VNG',...
+        'job_location',//'Ha Noi', 'TP HCM',...
+        'description',//'Mo ta cong viec da lam',...
     ];
 
     public function jobSeeker()

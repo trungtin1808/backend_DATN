@@ -23,10 +23,10 @@ class JobPost extends Model
         'employer_id',
         'job_type_id',
         'category_id',
-        'job_title',
-        'job_description',
-        'job_post_status',
-        'job_post',
+        'job_title',//'Nhan vien kinh doanh', 'Ky su phan mem',...
+        'job_description',//'Mo ta cong viec',...
+        'job_post_status',//pending, approved, rejected, expired, hidden, deleted
+        'post_date',//ngày đăng tin
         'expire_date',
         'salary',
         'street_address',

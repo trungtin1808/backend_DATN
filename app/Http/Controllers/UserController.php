@@ -71,46 +71,33 @@ class UserController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        $user = User::find($id);
-        if(!$user){
-            return response()->json(
-                [
-                    'success' => false,
-                    'message' => 'User not found'
-                ],
-                404
+    try {
+        $user = User::findOrFail($id);
 
-            );
+        // Chỉ update status nếu có trong request
+        if ($request->has('status')) {
+            $user->status = $request->status;
         }
 
-        if($request->has('name')){
-            $user->name = $request->name;
-        }
-        if($request->has('email')){
-            $user->email = $request->email;
-        }
+        // Update các field khác nếu cần
+        if ($request->has('name')) $user->name = $request->name;
+        if ($request->has('email')) $user->email = $request->email;
+        if ($request->has('phone')) $user->phone = $request->phone;
 
-        if($request->has('phone')){
-            $user->phone = $request->phone;
-        }
-
-
-        if($request->has('password')){
-            $user->password = Hash::make($request->password);
-        }
-
-        if($request->has('active')){
-            $user->active = $request->active;
-        }
         $user->save();
-        $user->refresh();
-        return response()->json(
-            [
-                'success' => true,
-                'data' => $user,
-                'message' => 'User updated successfully'
-            ]
-        );
+
+        return response()->json([
+            'success' => true,
+            'data' => $user,
+            'message' => 'User updated successfully'
+        ]);
+    } catch (\Exception $e) {
+        \Log::error('Update user failed: '.$e->getMessage());
+        return response()->json([
+            'success' => false,
+            'message' => 'Lỗi server: '.$e->getMessage()
+        ], 500);
+    }
     }
 
     /**
