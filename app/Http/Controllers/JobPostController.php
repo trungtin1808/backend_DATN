@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\JobPost;
+use App\Models\JobSeekerLog;
+use App\Models\JobPostActivity;
 
 class JobPostController extends Controller
 {
@@ -15,6 +17,8 @@ class JobPostController extends Controller
         $employer = auth()->user()->employer;
         $jobPosts = $employer->jobPosts()
                     ->where('job_post_status', '!=', 'deleted')
+                    ->withCount('activities')
+                    ->with(["employer"])
                     ->get();
 
         if($jobPosts->isEmpty()){
@@ -27,221 +31,39 @@ class JobPostController extends Controller
 
             );
         }
-        $data = $jobPosts->map(function($post) {
-            return $post->toCustomArray();
-        });
-
        
+        return response()->json([
+            "success" => true,
+            "data" => $jobPosts->map(function ($job){
 
-        return response()->json(
-            [
-                'success' => true,
-                'data' => $data,
-                'message' => 'JobPost retrieved successfully'
-            ]
-        );
+                return [
+                    "id" => $job->id,
+                    "title" => $job->job_title,
+                    "company" => $job->employer->company_name,
+                    "status" => $job->job_post_status,
+                    "applicants" => $job->activities_count,
+                    "datePosted" => $job->created_at,
+                    "logo" => $job->employer->logo,
+
+                    "street" => $job->street_address,
+                    "state" => $job->state,
+                    "city" => $job->city,
+                    "jobType" => $job->job_type_id,
+                    "category" => $job->category_id,
+                    "description" => $job->job_description,
+                    "requirements" => $job->job_requirements,
+                    "salaryMin" => $job->salaryMin,
+                    "salaryMax" => $job->salaryMax,
+                    "expiration" => $job->expire_date,
+
+                ];
+            }),
+
+        ]);
 
     }
 
-    public function pendingPosts()
-    {
-
-        $employer = auth()->user()->employer;
-        $jobPosts = $employer->jobPosts()
-                    ->where('job_post_status', 'pending')
-                    ->get();
-
-        if($jobPosts->isEmpty()){
-            return response()->json(
-                [
-                    'success' => false,
-                    'message' => 'PendingPost not found'
-                ],
-                404
-
-            );
-        }
-        $data = $jobPosts->map(function($post) {
-            return $post->toCustomArray();
-        });
-
-       
-
-        return response()->json(
-            [
-                'success' => true,
-                'data' => $data,
-                'message' => 'PendingPost retrieved successfully'
-            ]
-        );
-
-
-    }
-
-    public function approvedPosts()
-    {
-        $employer = auth()->user()->employer;
-        $jobPosts = $employer->jobPosts()
-                    ->where('job_post_status', 'approved')
-                    ->get();
-
-        if($jobPosts->isEmpty()){
-            return response()->json(
-                [
-                    'success' => false,
-                    'message' => 'ApprovedPost not found'
-                ],
-                404
-
-            );
-        }
-        $data = $jobPosts->map(function($post) {
-            return $post->toCustomArray();
-        });
-
-       
-
-        return response()->json(
-            [
-                'success' => true,
-                'data' => $data,
-                'message' => 'ApprovedPost retrieved successfully'
-            ]
-        );
-
-
-    }
-
-    public function rejectedPosts()
-    {
-        $employer = auth()->user()->employer;
-        $jobPosts = $employer->jobPosts()
-                    ->where('job_post_status', 'rejected')
-                    ->get();
-
-        if($jobPosts->isEmpty()){
-            return response()->json(
-                [
-                    'success' => false,
-                    'message' => 'RejectedPost not found'
-                ],
-                404
-
-            );
-        }
-        $data = $jobPosts->map(function($post) {
-            return $post->toCustomArray();
-        });
-
-       
-
-        return response()->json(
-            [
-                'success' => true,
-                'data' => $data,
-                'message' => 'RejectedPost retrieved successfully'
-            ]
-        );
-
-
-    }
-
-
-    public function expiredPosts()
-    {
-        $employer = auth()->user()->employer;
-        $jobPosts = $employer->jobPosts()
-                    ->where('job_post_status', 'expired')
-                    ->get();
-
-        if($jobPosts->isEmpty()){
-            return response()->json(
-                [
-                    'success' => false,
-                    'message' => 'ExpiredPost not found'
-                ],
-                404
-
-            );
-        }
-        $data = $jobPosts->map(function($post) {
-            return $post->toCustomArray();
-        });
-
-       
-
-        return response()->json(
-            [
-                'success' => true,
-                'data' => $data,
-                'message' => 'ExpiredPost retrieved successfully'
-            ]
-        );
-    }
-
-    public function hiddenPosts()
-    {
-        $employer = auth()->user()->employer;
-        $jobPosts = $employer->jobPosts()
-                    ->where('job_post_status', 'hidden')
-                    ->get();
-
-        if($jobPosts->isEmpty()){
-            return response()->json(
-                [
-                    'success' => false,
-                    'message' => 'HiddenPost not found'
-                ],
-                404
-
-            );
-        }
-        $data = $jobPosts->map(function($post) {
-            return $post->toCustomArray();
-        });
-
-       
-
-        return response()->json(
-            [
-                'success' => true,
-                'data' => $data,
-                'message' => 'HiddenPost retrieved successfully'
-            ]
-        );
-    }
-
-    public function deletedPosts()
-    {
-        $employer = auth()->user()->employer;
-        $jobPosts = $employer->jobPosts()
-                    ->where('job_post_status', 'deleted')
-                    ->get();
-
-        if($jobPosts->isEmpty()){
-            return response()->json(
-                [
-                    'success' => false,
-                    'message' => 'DeletedPost not found'
-                ],
-                404
-
-            );
-        }
-        $data = $jobPosts->map(function($post) {
-            return $post->toCustomArray();
-        });
-
-       
-
-        return response()->json(
-            [
-                'success' => true,
-                'data' => $data,
-                'message' => 'DeletedPost retrieved successfully'
-            ]
-        );
-    }
+    
 
     
 
@@ -254,13 +76,15 @@ class JobPostController extends Controller
 
         $jobPost = JobPost::create([
             'employer_id' => $employer->id,
-            'job_type_id' => $request->job_type_id,
-            'category_id' => $request->category_id,
-            'job_title' => $request->job_title,
-            'job_description' => $request->job_description,
-            'expire_date' => $request->expire_date,
-            'salary' => $request->salary,
-            'street_address' => $request->street_address,
+            'job_type_id' => $request->jobType,
+            'category_id' => $request->category,
+            'job_title' => $request->title,
+            'job_description' => $request->description,
+            'job_requirements' => $request->requirements,
+            'expire_date' => $request->expiration,
+            'salaryMin' => $request->salaryMin,
+            'salaryMax' => $request->salaryMax,
+            'street_address' => $request->street,
             'state' => $request->state,
             'city' => $request->city,
             
@@ -297,23 +121,20 @@ class JobPostController extends Controller
 
         return response()->json(
             [
-                'success' => true,
-                'data' => [
-                    'id' => $jobPost->id,
-                    'employer' => $jobPost->employer->company_name,
-                    'job_type' => $jobPost->jobType->job_type,
-                    'category' => $jobPost->category->category_name,
-                    'job_title' => $jobPost->job_title,
-                    'job_description' => $jobPost->job_description,
-                    'job_post_status' => $jobPost->job_post_status,
-                    'post_date' => $jobPost->post_date,
-                    'expire_date' => $jobPost->expire_date,
-                    'salary' => $jobPost->salary,
-                    'street_address' => $jobPost->street_address,
+                
+                    'jobType' => $jobPost->job_type_id,
+                    'category' => $jobPost->category_id,
+                    'title' => $jobPost->job_title,
+                    'description' => $jobPost->job_description,
+                    'requirements' => $jobPost->job_requirements,
+                    'expiration' => $jobPost->expire_date,
+                    'salaryMin' => $jobPost->salaryMin,
+                    'salaryMax' => $jobPost->salaryMax,
+                    'street' => $jobPost->street_address,
                     'state' => $jobPost->state,
                     'city' => $jobPost->city,
 
-                ]
+              
                 
             ]
         );
@@ -321,262 +142,6 @@ class JobPostController extends Controller
 
     }
 
-    public function pendingPostById(string $id)
-    {
-         $employer = auth()->user()->employer;
-
-         $jobPost = $employer->jobPosts()
-                    ->where('id', $id)
-                    ->where('job_post_status', 'pending')
-                    ->first();
-
-        if (!$jobPost) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Pending job post not found'
-            ], 404);
-         }
-
-
-        return response()->json(
-            [
-                'success' => true,
-                'data' => [
-                    'id' => $jobPost->id,
-                    'employer' => $jobPost->employer->company_name,
-                    'job_type' => $jobPost->jobType->job_type,
-                    'category' => $jobPost->category->category_name,
-                    'job_title' => $jobPost->job_title,
-                    'job_description' => $jobPost->job_description,
-                    'job_post_status' => $jobPost->job_post_status,
-                    'post_date' => $jobPost->post_date,
-                    'expire_date' => $jobPost->expire_date,
-                    'salary' => $jobPost->salary,
-                    'street_address' => $jobPost->street_address,
-                    'state' => $jobPost->state,
-                    'city' => $jobPost->city,
-
-                ]
-                
-            ]
-        );
-
-
-    }
-
-    public function approvedPostById(string $id)
-    {
-        $employer = auth()->user()->employer;
-
-        $jobPost = $employer->jobPosts()
-                    ->where('id', $id)
-                    ->where('job_post_status', 'approved')
-                    ->first();
-
-        if (!$jobPost) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Approved job post not found'
-            ], 404);
-         }
-
-
-        return response()->json(
-            [
-                'success' => true,
-                'data' => [
-                    'id' => $jobPost->id,
-                    'employer' => $jobPost->employer->company_name,
-                    'job_type' => $jobPost->jobType->job_type,
-                    'category' => $jobPost->category->category_name,
-                    'job_title' => $jobPost->job_title,
-                    'job_description' => $jobPost->job_description,
-                    'job_post_status' => $jobPost->job_post_status,
-                    'post_date' => $jobPost->post_date,
-                    'expire_date' => $jobPost->expire_date,
-                    'salary' => $jobPost->salary,
-                    'street_address' => $jobPost->street_address,
-                    'state' => $jobPost->state,
-                    'city' => $jobPost->city,
-
-                ]
-                
-            ]
-        );
-
-    }
-
-    public function rejectedPostById(string $id)
-    {
-        $employer = auth()->user()->employer;
-
-         $jobPost = $employer->jobPosts()
-                    ->where('id', $id)
-                    ->where('job_post_status', 'rejected')
-                    ->first();
-
-        if (!$jobPost) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Rejected job post not found'
-            ], 404);
-         }
-
-
-        return response()->json(
-            [
-                'success' => true,
-                'data' => [
-                    'id' => $jobPost->id,
-                    'employer' => $jobPost->employer->company_name,
-                    'job_type' => $jobPost->jobType->job_type,
-                    'category' => $jobPost->category->category_name,
-                    'job_title' => $jobPost->job_title,
-                    'job_description' => $jobPost->job_description,
-                    'job_post_status' => $jobPost->job_post_status,
-                    'post_date' => $jobPost->post_date,
-                    'expire_date' => $jobPost->expire_date,
-                    'salary' => $jobPost->salary,
-                    'street_address' => $jobPost->street_address,
-                    'state' => $jobPost->state,
-                    'city' => $jobPost->city,
-
-                ]
-                
-            ]
-        );
-
-    }
-
-    public function expiredPostById(string $id)
-    {
-        $employer = auth()->user()->employer;
-
-         $jobPost = $employer->jobPosts()
-                    ->where('id', $id)
-                    ->where('job_post_status', 'expired')
-                    ->first();
-
-        if (!$jobPost) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Expired job post not found'
-            ], 404);
-         }
-
-
-        return response()->json(
-            [
-                'success' => true,
-                'data' => [
-                    'id' => $jobPost->id,
-                    'employer' => $jobPost->employer->company_name,
-                    'job_type' => $jobPost->jobType->job_type,
-                    'category' => $jobPost->category->category_name,
-                    'job_title' => $jobPost->job_title,
-                    'job_description' => $jobPost->job_description,
-                    'job_post_status' => $jobPost->job_post_status,
-                    'post_date' => $jobPost->post_date,
-                    'expire_date' => $jobPost->expire_date,
-                    'salary' => $jobPost->salary,
-                    'street_address' => $jobPost->street_address,
-                    'state' => $jobPost->state,
-                    'city' => $jobPost->city,
-
-                ]
-                
-            ]
-        );
-
-    }
-
-    public function hiddenPostById(string $id)
-    {
-        $employer = auth()->user()->employer;
-
-         $jobPost = $employer->jobPosts()
-                    ->where('id', $id)
-                    ->where('job_post_status', 'hidden')
-                    ->first();
-
-        if (!$jobPost) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Hidden job post not found'
-            ], 404);
-         }
-
-
-        return response()->json(
-            [
-                'success' => true,
-                'data' => [
-                    'id' => $jobPost->id,
-                    'employer' => $jobPost->employer->company_name,
-                    'job_type' => $jobPost->jobType->job_type,
-                    'category' => $jobPost->category->category_name,
-                    'job_title' => $jobPost->job_title,
-                    'job_description' => $jobPost->job_description,
-                    'job_post_status' => $jobPost->job_post_status,
-                    'post_date' => $jobPost->post_date,
-                    'expire_date' => $jobPost->expire_date,
-                    'salary' => $jobPost->salary,
-                    'street_address' => $jobPost->street_address,
-                    'state' => $jobPost->state,
-                    'city' => $jobPost->city,
-
-                ]
-                
-            ]
-        );
-
-    }
-
-    public function deletedPostById(string $id)
-    {
-        $employer = auth()->user()->employer;
-
-         $jobPost = $employer->jobPosts()
-                    ->where('id', $id)
-                    ->where('job_post_status', 'deleted')
-                    ->first();
-
-        if (!$jobPost) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Deleted job post not found'
-            ], 404);
-         }
-
-
-        return response()->json(
-            [
-                'success' => true,
-                'data' => [
-                    'id' => $jobPost->id,
-                    'employer' => $jobPost->employer->company_name,
-                    'job_type' => $jobPost->jobType->job_type,
-                    'category' => $jobPost->category->category_name,
-                    'job_title' => $jobPost->job_title,
-                    'job_description' => $jobPost->job_description,
-                    'job_post_status' => $jobPost->job_post_status,
-                    'post_date' => $jobPost->post_date,
-                    'expire_date' => $jobPost->expire_date,
-                    'salary' => $jobPost->salary,
-                    'street_address' => $jobPost->street_address,
-                    'state' => $jobPost->state,
-                    'city' => $jobPost->city,
-
-                ]
-                
-            ]
-        );
-    }
-
-
-
-
-    
 
     /**
      * Update the specified resource in storage.
@@ -597,15 +162,52 @@ class JobPostController extends Controller
             );
         }
 
-        $jobPost->expire_date = $request->expire_date;
-
+        $jobPost->employer_id = $employer->id;
+        $jobPost->job_type_id = $request->jobType;
+        $jobPost->category_id = $request->category;
+        $jobPost->job_title = $request->title;
+        $jobPost->job_description = $request->description;
+        $jobPost->job_requirements = $request->requirements;
+        $jobPost->expire_date = $request->expiration;
+        $jobPost->salaryMin = $request->salaryMin;
+        $jobPost->salaryMax = $request->salaryMax;
+        $jobPost->street_address = $request->street;
+        $jobPost->state = $request->state;
+        $jobPost->city = $request->city;
         $jobPost->save();
 
          return response()->json([
             'success' => true,
-            'message' => 'expire_date updated successfully'
+            'message' => 'Jobpost updated successfully'
             ], 200);
         
+    }
+
+    public function updateForAdmin(Request $request, string $id)
+    {
+        $jobPost = JobPost::where('id', $id)->first();
+        
+        if(!$jobPost){
+            return response()->json(
+                [
+                    'success' => false,
+                    'message' => 'JobPost not found'
+                ],
+                404
+
+            );
+        }
+
+        $jobPost->job_post_status = $request->job_post_status;
+        $jobPost->save();
+
+         return response()->json([
+            'success' => true,
+            'message' => 'Jobpost updated successfully'
+            ], 200);
+
+
+
     }
 
     /**
@@ -614,7 +216,7 @@ class JobPostController extends Controller
     public function destroy(string $id)
     {
         $employer = auth()->user()->employer;
-        $jobPost = $employer->jobPosts()->where('id', $id)->where('job_post_status', '!=', 'deleted')->first();
+        $jobPost = $employer->jobPosts()->where('id', $id)->first();
 
         if(!$jobPost){
             return response()->json(
@@ -627,8 +229,7 @@ class JobPostController extends Controller
             );
         }
 
-        $jobPost->job_post_status = "deleted";
-        $jobPost->save();
+        $jobPost->delete();
 
         return response()->json([
             'success' => true,
@@ -637,7 +238,32 @@ class JobPostController extends Controller
 
     }
 
-    public function hidden(string $id)
+    public function destroyForAdmin(string $id)
+    {
+        $jobPost = JobPost::where('id', $id)->first();
+
+        if(!$jobPost){
+            return response()->json(
+                [
+                    'success' => false,
+                    'message' => 'JobPost not found'
+                ],
+                404
+
+            );
+        }
+
+        $jobPost->delete();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'JobPost deleted successfully'
+            ], 200);
+
+
+    }
+
+    public function toggleHiddenJob(string $id)
     {
         $employer = auth()->user()->employer;
         $jobPost = $employer->jobPosts()->where('id', $id)->first();
@@ -647,21 +273,14 @@ class JobPostController extends Controller
                 'success' => false,
                 'message' => 'JobPost not found'
             ], 404);
-         }
+        }
 
-         if($jobPost->job_post_status != 'approved'){
-            return response()->json([
-                'success' => false,
-                'message' => 'Only approved posts can be hidden'
-            ], 404);
-         }
-
-        $jobPost->job_post_status = "hidden";
+        $jobPost->job_post_status =  $jobPost->job_post_status == "hidden" ? "accepted" : "hidden";
         $jobPost->save();
 
         return response()->json([
             'success' => true,
-            'message' => 'JobPost hidden successfully'
+            'message' => 'JobPost changed successfully'
             ], 200);
         
 
@@ -670,33 +289,162 @@ class JobPostController extends Controller
 
     }
 
-    public function unhidden(string $id)
+
+
+    public function getJobs(Request $request)
     {
-        $employer = auth()->user()->employer;
-        $jobPost = $employer->jobPosts()->where('id', $id)->first();
+        $keyword = $request->query("keyword");
+        $location = $request->query("location");
+        $category = $request->query("category");
+        $type = $request->query("type");
+        $minSalary = $request->query("minSalary");
+        $maxSalary = $request->query("maxSalary");
+        $jobSeekerId = $request->query("jobSeekerId");
 
-        if (!$jobPost) {
-            return response()->json([
-                'success' => false,
-                'message' => 'JobPost not found'
-            ], 404);
-         }
+        $query = JobPost::where("job_post_status", "accepted");
 
-         if($jobPost->job_post_status != 'hidden'){
-            return response()->json([
-                'success' => false,
-                'message' => 'Only hidden posts can be reactivated'
-            ], 404);
-         }
+        if($keyword){
+            $query->where("job_title", "LIKE", "%". $keyword . "%");
+        }
 
-        $jobPost->job_post_status = "approved";
-        $jobPost->save();
+        if($location){
+            $query->where("city", "LIKE", "%" .$location ."%");
+        }
+
+        if($category){
+            $query->where("category_id", $category);
+        }
+
+        if($type){
+            $query->where("job_type_id", $type);
+        }
+
+        if($minSalary){
+            $query->where("salaryMax", ">=", intval($minSalary));
+        }
+
+        if($maxSalary){
+            $query->where("salaryMin", "<=", intdiv($maxSalary));
+        }
+
+        // Fetch jobs with company info
+
+        $jobs = $query->with(["employer", "employer.user"])->get();
+
+        $savedJobIds = [];
+        $applicationStatusMap = [];
+
+        if($jobSeekerId){
+            $savedJobIds = JobSeekerLog::where("job_seeker_id", $jobSeekerId)
+                ->pluck('job_post_id')
+                ->map(fn($id) => strval($id))
+                ->toArray();
+
+            $applications = JobPostActivity::where("job_seeker_id", $jobSeekerId)
+                                            ->select("job_post_id", "apply_status")
+                                            ->get();
+            foreach ($applications as $app){
+                $applicationStatusMap[strval($app->job_post_id)] = $app->apply_status;
+            }
+        }
+
+        $jobsWihExtras = $jobs->map(function ($job) use($savedJobIds, $applicationStatusMap){
+            $jobId = strval($job->id);
+
+            return [
+                ...$job->toArray(),
+                "isSaved" => in_array($jobId, $savedJobIds),
+                "applicationStatus" => $applicationStatusMap[$jobId] ?? null,
+                
+            ];
+        });
+
+        return response()->json($jobsWihExtras);
+    }
+
+    public function getJobById(Request $request, string $id )
+    {
+        $jobSeekerId = $request->query("jobSeekerId");
+        $jobPost = JobPost::where("id", $id)
+                            ->where("job_post_status", "accepted")
+                            ->with(["employer", "employer.user"])->first();
+
+        if(!$jobPost){
+            return response()->json(
+                [
+                    'success' => false,
+                    'message' => 'JobPost not found'
+                ],
+                404
+            );
+
+        }
+
+        $applicationStatus = null;
+
+        if($jobSeekerId){
+            $application = JobPostActivity::where("job_seeker_id", $jobSeekerId)
+                                            ->where("job_post_id", $id)
+                                            ->first();
+            if($application){
+                $applicationStatus = $application->apply_status;  
+            }
+                                           
+        }
 
         return response()->json([
-            'success' => true,
-            'message' => 'JobPost unhidden successfully'
-            ], 200);
-        
+        'success' => true,
+        'jobPost' => $jobPost,
+        'applicationStatus' => $applicationStatus,
+        ], 200);
 
     }
+
+    public function indexForAdmin()
+    {
+        
+        $jobPosts =  JobPost::withCount('activities')->with(["employer"])->get();
+
+        if($jobPosts->isEmpty()){
+            return response()->json(
+                [
+                    'success' => false,
+                    'message' => 'JobPost not found'
+                ],
+                404
+
+            );
+        }
+       
+        return response()->json([
+            "success" => true,
+            "data" => $jobPosts->map(function ($job){
+
+                return [
+                    "id" => $job->id,
+                    "employer_id" => $job->employer->id,
+                    "title" => $job->job_title,
+                    "company" => $job->employer->company_name,
+                    "status" => $job->job_post_status,
+                    "applicants" => $job->activities_count,
+                    "datePosted" => $job->created_at,
+                    "logo" => $job->employer->logo,
+
+                    "street" => $job->street_address,
+                    "state" => $job->state,
+                    "city" => $job->city,
+                    "jobType" => $job->job_type_id,
+                    "category" => $job->category_id,
+                    "description" => $job->job_description,
+                    "requirements" => $job->job_requirements,
+                    "salaryMin" => $job->salaryMin,
+                    "salaryMax" => $job->salaryMax,
+                    "expiration" => $job->expire_date,
+
+                ];
+            }),
+
+        ]);
+    }
+
 }

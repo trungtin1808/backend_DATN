@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class RegisterRequest extends FormRequest
+class CvRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -22,30 +22,17 @@ class RegisterRequest extends FormRequest
     public function rules(): array
     {
         return [
-            
-            
-            'email' => 'required|string|email|max:255|unique:users,email',
-            'phone' => 'required|string|unique:users,phone',
-            
+            'file' => 'required|file|mimes:pdf|max:5120', // tối đa 5MB
         ];
     }
 
     public function messages(): array
     {
-
         return [
-            'required' => ':attribute bắt buộc phải nhập.',
-            'email' => ':attribute không đúng định dạng.',
-            'unique' => ':attribute đã tồn tại.',
+            'cv_file.required' => 'Bạn phải chọn file CV.',
+            'cv_file.file' => 'File CV không hợp lệ.',
+            'cv_file.mimes' => 'File CV phải có định dạng PDF.',
+            'cv_file.max' => 'File CV không được lớn hơn 5MB.',
         ];
     }
-
-    public function attributes(): array
-    {
-        return [        
-            'email' => 'email',
-            'phone' => 'phone',
-        ];
-    }
-
 }

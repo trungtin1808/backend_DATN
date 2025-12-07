@@ -15,7 +15,9 @@ class CV extends Model
 
     protected $fillable = [
         'job_seeker_id',
+        'name',
         'link_cv',
+        'is_default'
     ];
 
     public function jobSeeker()

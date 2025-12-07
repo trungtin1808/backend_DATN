@@ -11,7 +11,9 @@ class JobSeekerLogController extends Controller
     public function store(Request $request, string $jobPostId)
     {
         $jobSeeker = auth()->user()->jobSeeker;
-        $jobPost = JobPost::find($jobPostId);
+        $jobPost = JobPost::where('id', $jobPostId)
+                  ->where('job_post_status', 'accepted')
+                  ->first();
 
         if (!$jobPost) {
             return response()->json([
@@ -32,12 +34,10 @@ class JobSeekerLogController extends Controller
                 ], 400);
         }
 
-        $currentDate = now(); 
 
         $jobSeekerLog = JobSeekerLog::create([
             'job_post_id' => $jobPostId,
             'job_seeker_id' => $jobSeeker->id,
-            'saved_at' => $currentDate,
         ]);
 
         $jobSeekerLog->refresh();
@@ -52,19 +52,19 @@ class JobSeekerLogController extends Controller
 
     }
 
-    public function jobSeekerLogs()
+    public function getSavedJobs()
     {
         $jobSeeker = auth()->user()->jobSeeker;
-        $jobSeekerLogs = $jobSeeker->logs()
-        ->with('jobPost') 
+        $savedJobList = $jobSeeker->logs()
+        ->with(['jobPost', 'jobPost.employer']) 
         ->orderBy('created_at', 'desc')
         ->get();
 
-        if($jobSeekerLogs->isEmpty()){
+        if($savedJobList->isEmpty()){
             return response()->json(
                 [
                     'success' => false,
-                    'message' => 'jobseekerlog not found'
+                    'message' => 'Saved Job not found'
                 ],
                 404
 
@@ -73,45 +73,12 @@ class JobSeekerLogController extends Controller
 
          return response()->json([
             'success' => true,
-            'data' => $jobSeekerLogs
+            'data' => $savedJobList
         ]);
-
-
-
 
     }
 
-    public function show(string $jobPostId)
-    {
-        $jobSeeker = auth()->user()->jobSeeker;
-        $jobPost = JobPost::find($jobPostId);
-
-        if (!$jobPost) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Bài đăng không tồn tại.'
-            ], 404);
-        }
-
-
-        $jobSeekerLog = $jobSeeker->logs()->where('job_post_id', $jobPostId)->first();
-
-        if (!$jobSeekerLog) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Bạn chua luu bai dang nay'
-                ], 400);
-        }
-
-        return response()->json([
-            'success' => true,
-            'message' => 'Truy van thanh cong!',
-            'data' => $jobSeekerLog
-        ]);
-
-
-
-    }
+    
 
 
 

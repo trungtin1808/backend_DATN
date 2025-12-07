@@ -4,6 +4,9 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\User;
+use App\Http\Requests\UpdateForJobSeekerProfileRequest;
+use Illuminate\Support\Facades\Storage;
+
 
 
 class JobSeekerProfileController extends Controller
@@ -24,21 +27,25 @@ class JobSeekerProfileController extends Controller
         return response()->json([
             'success' => true,
             'data' => [
-            'name'          => $jobSeeker->name,
-            'gender'        => $jobSeeker->gender,
-            'email'         => $jobSeeker->email,
-            'phone'         => $jobSeeker->phone,
-            'date_of_birth' => $jobSeeker->date_of_birth,
-            'image'         => $jobSeeker->image,
-            'street_address' => $user->street_address,
-            'state'          => $user->state,
-            'city'           => $user->city,
-        ]
+            'user_id' => $user->id,
+            'job_seeker_id' => $jobseeker->id,
+            'name' => $jobseeker->name,
+            'gender' => $jobseeker->gender ?? '',
+            'email' => $jobseeker->email,
+            'phone' => $jobseeker->phone,
+            'date_of_birh' => $jobseeker->date_of_birth ?? '',
+            'role' => $user->role,
+            'avatar' => $user->avatar ?? '',
+            'street_address' => $user->street_address??'',
+            'state' => $user->state ?? '',
+            'city' => $user->city ?? '',
+            
+            ]
         ]);
 
     }
 
-    public function update(Request $request){
+    public function update(UpdateForJobSeekerProfileRequest $request){
 
         $user = auth()->user();
         $jobSeeker = $user->jobSeeker;
@@ -50,9 +57,10 @@ class JobSeekerProfileController extends Controller
             ], 404);
         }
 
+
         if($request->has('name')){
             
-            $jobSeeker->name = $request->name;
+            
             $user->name = $request->name;
 
         }
@@ -69,11 +77,32 @@ class JobSeekerProfileController extends Controller
 
         }
 
-        
-        
+        if($request->hasFile('cv')){
 
-        if($request->has('image')){
-            $jobSeeker->image = $request->image;
+            
+
+            if ($jobSeeker->cv) {
+                Storage::disk('public')->delete($jobSeeker->cv);
+            }
+
+            $cvPath = $request->file('cv')->store('cvs', 'public');
+            $jobSeeker->cv = $cvPath;
+        }
+
+        if($request->has('cv_name')){
+            $jobSeeker->cv_name = $request->cv_name;
+        }
+
+        if($request->hasFile('avatar')){
+
+            
+
+            if ($user->avatar) {
+                Storage::disk('public')->delete($user->avatar);
+            }
+
+            $avatarPath = $request->file('avatar')->store('avatars', 'public');
+            $user->avatar = $avatarPath;
         }
 
         if($request->has('street_address')){
@@ -99,19 +128,23 @@ class JobSeekerProfileController extends Controller
         $jobSeeker->save();
 
         return response()->json([
-        'success' => true,
-        'message' => 'Cập nhật jobSeeker thành công',
-        'data' => [
-            'name'          => $jobSeeker->name,
-            'gender'        => $jobSeeker->gender,
-            'email'         => $jobSeeker->email,
-            'phone'         => $jobSeeker->phone,
-            'date_of_birth' => $jobSeeker->date_of_birth,
-            'image'         => $jobSeeker->image,
-            'street_address' => $user->street_address,
-            'state'          => $user->state,
-            'city'           => $user->city,
-        ]
+            'data' => [
+                'user_id' => $user->id,
+                'name' => $user->name,
+                'email' => $user->email,
+                'phone' => $user->phone,
+                'avatar' => $user->avatar ?? '',
+                'street_address' => $user->street_address??'',
+                'state' => $user->state ?? '',
+                'city' => $user->city ?? '',
+                'role' => $user->role,
+
+                'job_seeker_id' => $jobSeeker->id,
+                'gender' => $jobSeeker->gender ?? '',
+                'date_of_birth' => $jobSeeker->date_of_birth ?? '',
+                'cv' => $jobSeeker->cv ?? '',
+                'cv_name' => $jobSeeker->cv_name ?? '',
+        ],
 
         ], 200);
 

@@ -25,12 +25,10 @@ class JobSeeker extends Model
 
     protected $fillable = [
         'user_id',
-        'name',
         'gender',
-        'email',
-        'phone',
         'date_of_birth',
-        'image',
+        'cv',
+        'cv_name',
     ];
 
     public function user()

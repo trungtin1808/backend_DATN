@@ -11,7 +11,9 @@ class JobPostActivityController extends Controller
     public function apply(Request $request, string $jobPostId)
     {
         $jobSeeker = auth()->user()->jobSeeker;
-        $jobPost = JobPost::find($jobPostId);
+        $jobPost = JobPost::where('id', $jobPostId)
+                  ->where('job_post_status', 'accepted')
+                  ->first();
 
         if (!$jobPost) {
             return response()->json([
@@ -29,19 +31,30 @@ class JobPostActivityController extends Controller
             ], 400);
         }
 
-        $application = JobPostActivity::create([
-            'job_post_id' => $jobPostId,
-            'job_seeker_id' => $jobSeeker->id,
-            'link_cv' => $request->link_cv,
+
+       $defaultCv = $jobSeeker->CVs()->where('is_default', 1)->first();
+
+        if (!$defaultCv) {
+            return response()->json([
+            'success' => false,
+            'message' => 'No default CV found. Please mark a CV as default before applying.',
+            ], 400);
+        }
+
+        JobPostActivity::create([
+            "job_seeker_id" => $jobSeeker->id,
+            "job_post_id"   => $jobPost->id,
+            "link_cv"         => $defaultCv->link_cv,
         ]);
 
-        $application->refresh();
-
-         return response()->json([
+        return response()->json([
         'success' => true,
-        'message' => 'Ứng tuyển thành công!',
-        'data' => $application
-        ]);
+        'message' => 'Applied successfully',
+        ], 201);
+
+
+
+         
 
 
 
@@ -49,15 +62,15 @@ class JobPostActivityController extends Controller
     }
 
 
-    public function jobseeker_applications()
+    public function getAppliedJobs()
     {
         $jobSeeker = auth()->user()->jobSeeker;
-        $applications = $jobSeeker->appliedJobs() 
-        ->with('jobPost') 
+        $appliedJobList = $jobSeeker->appliedJobs()
+        ->with(['jobPost', 'jobPost.employer']) 
         ->orderBy('created_at', 'desc')
         ->get();
 
-        if($applications->isEmpty()){
+        if($appliedJobList->isEmpty()){
             return response()->json(
                 [
                     'success' => false,
@@ -70,7 +83,7 @@ class JobPostActivityController extends Controller
 
         return response()->json([
         'success' => true,
-        'data' => $applications
+        'data' => $appliedJobList
         ]);
 
     }
@@ -78,7 +91,9 @@ class JobPostActivityController extends Controller
     public function employer_applications(string $jobPostId)
     {
         $employer = auth()->user()->employer;
-        $jobPost = JobPost::find($jobPostId);
+        $jobPost = JobPost::where('id', $jobPostId)
+                  ->where('job_post_status','!=', 'deleted')
+                  ->first();
 
         if (!$jobPost) {
             return response()->json([
@@ -95,7 +110,36 @@ class JobPostActivityController extends Controller
         }
 
         $applications = $jobPost->activities()
-            ->with('jobSeeker') 
+            ->with(['jobSeeker.user','jobPost']) 
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        return response()->json([
+            'success' => true,
+            'data' => $applications
+        ]);
+
+
+
+
+    }
+
+    public function admin_applications(string $jobPostId)
+    {
+        
+        $jobPost = JobPost::where('id', $jobPostId)
+                  ->first();
+
+        if (!$jobPost) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Bài đăng không tồn tại.'
+            ], 404);
+        }
+
+
+        $applications = $jobPost->activities()
+            ->with(['jobSeeker.user','jobPost']) 
             ->orderBy('created_at', 'desc')
             ->get();
 
@@ -113,7 +157,9 @@ class JobPostActivityController extends Controller
     public function updateForEmployer(Request $request, string $jobPostId, string $jobSeekerId)
     {
         $employer = auth()->user()->employer;
-        $jobPost = JobPost::find($jobPostId);
+        $jobPost = JobPost::where('id', $jobPostId)
+                  ->where('job_post_status','!=', 'deleted')
+                  ->first();
 
         if (!$jobPost) {
             return response()->json([
@@ -161,68 +207,7 @@ class JobPostActivityController extends Controller
 
     }
 
-    public function updateForJobSeeker(Request $request, string $jobPostId)
-    {
-        $jobSeeker = auth()->user()->jobSeeker;
-        $jobPost = JobPost::find($jobPostId);
-
-        if (!$jobPost) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Bài đăng không tồn tại.'
-            ], 404);
-        }
-
-        $application = $jobSeeker->appliedJobs()->where('job_post_id', $jobPostId)->first();
-
-         if(!$application){
-            return response()->json(
-                [
-                    'success' => false,
-                    'message' => 'application not found'
-                ],
-                404
-
-            );
-
-        }
-
-        if($application->apply_status !== "pending"){
-             return response()->json(
-                [
-                    'success' => false,
-                    'message' => 'Khong duoc phep cap nhat'
-                ],
-                404
-
-            );
-        }
-
-        if($request->has("apply_status")){
-            $application->apply_status = $request->apply_status;
-        }
-
-        if($request->has("link_cv")){
-            $application->link_cv = $request->link_cv;
-        }
-
-
-        $application->save();
-
-
-        return response()->json([
-            'success' => true,
-            'message' => 'Application updated successfully',
-            'data' => $application,
-            ]);
-
-
-
-
-
-        
-    }
-
+    
 
     
 }

@@ -18,11 +18,11 @@ return new class extends Migration
             $table->unsignedBigInteger('category_id');
             $table->string('job_title');
             $table->string('job_description');
-            $table->enum('job_post_status', ['pending', 'approved', 'rejected', 'expired', 'hidden', 'deleted'])->default('pending');
-            $table->timestamp('post_date')->useCurrent();
+            $table->string('job_requirements');
+            $table->enum('job_post_status', ['pending', 'accepted', 'rejected', 'expired', 'hidden', 'employer_banned'])->default('pending');
             $table->timestamp('expire_date')->nullable();
-            $table->unsignedBigInteger('salary');
-            $table->timestamp('approve_at')->nullable();
+            $table->unsignedBigInteger('salaryMin');
+            $table->unsignedBigInteger('salaryMax');
             $table->timestamps();
 
             $table->string('street_address');
@@ -34,8 +34,6 @@ return new class extends Migration
             $table->foreign('category_id')->references('id')->on('category')->onDelete('cascade');
 
         });
-
-        DB::statement('ALTER TABLE job_post ADD CONSTRAINT post_before_expire CHECK (post_date <= expire_date)');
     }
 
     /**

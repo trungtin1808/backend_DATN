@@ -9,6 +9,7 @@ use App\Models\User;
 use App\Models\JobPost;
 use App\Models\Review;
 use App\Models\Follow;
+use App\Models\JobPostActivity;
 
 class Employer extends Model
 {
@@ -21,10 +22,8 @@ class Employer extends Model
         'company_name',
         'profile_description',
         'establishment_date',
-        'company_email',
-        'company_phone',
         'company_website_url',
-        'company_image',
+        'logo'
     ];
 
     public function user()
@@ -45,6 +44,18 @@ class Employer extends Model
     public function followers()
     {
         return $this->hasMany(Follow::class, 'employer_id', 'id');
+    }
+
+    public function activities()
+    {
+        return $this->hasManyThrough(
+            JobPostActivity::class,
+            JobPost::class,
+            'employer_id',   // JobPost.employer_id
+            'job_post_id',   // JobApplication.job_post_id
+            'id',            // Employer.id
+            'id'             // JobPost.id
+        );
     }
     
 }

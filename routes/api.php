@@ -17,12 +17,10 @@ use App\Http\Controllers\PotentialStorageController;
 use App\Http\Controllers\JobSeekerLogController;
 use App\Http\Controllers\FollowController;
 use App\Http\Controllers\ReviewController;
-use App\Http\Controllers\ManagementUserController;
-use App\Http\Controllers\ManagementJobSeekerController;
-use App\Http\Controllers\ManagementEmployerController;
-use App\Http\Controllers\ManagementJobPostController;
-use App\Http\Controllers\PublicJobPostController;
-use App\Http\Controllers\PublicEmployerController;
+use App\Http\Controllers\EmployerAnalyticController;
+use App\Http\Controllers\AdminAnalyticController;
+use App\Http\Controllers\UserController;
+use App\Http\Controllers\JobSeekerAnalyticController;
 
 
 
@@ -37,11 +35,11 @@ Route::group([
 
     Route::post('register', [AuthController::class,'register']);
 
-    Route::get('job-posts',[PublicJobPostController::class, 'jobPosts']);
-    Route::get('job-posts/{id}', [PublicJobPostController::class, 'show']);
+    Route::get('job-posts',[JobPostController::class, 'getJobs']);
+    Route::get('job-posts/{id}', [JobPostController::class, 'getJobById']);
+    
 
-    Route::get('employers', [PublicEmployerController::class,'employers']);
-    Route::get('employers/{id}', [PublicEmployerController::class, 'show']);
+    
     Route::get('employers/{id}/followers', [FollowController::class,'followers']);
     Route::get('employers/{id}/reviews',[ReviewController::class,'reviews']);
 
@@ -59,29 +57,39 @@ Route::group([
 
     Route::post('logout', [AuthController::class,'logout']);
 
-    Route::get('profile',[JobSeekerProfileController::class,'profile']);
-    Route::patch('profile',[JobSeekerProfileController::class,'update']);
+    Route::post('profile',[JobSeekerProfileController::class,'update']); 
 
     Route::resource('profile/educations', EducationController::class);
 
     Route::resource('profile/experiences', ExperienceController::class);
 
-    Route::resource('profile/cvs', CVController::class);
+    
+    Route::post('cvs', [CVController::class, 'store']);
+    Route::get('cvs', [CVController::class, 'index']);
+    Route::patch('cvs/{id}', [CVController::class, 'update']);
+    Route::delete('cvs/{id}', [CVController::class,'destroy']);
 
     Route::resource('profile/certificates', CertificateController::class);
 
 
 
     Route::post('job-posts/{id}/apply',[JobPostActivityController::class,'apply']);
-    Route::get('jobseeker-applications',[JobPostActivityController::class,'jobseeker_applications']);
+    Route::get('apply-jobs',[JobPostActivityController::class,'getAppliedJobs']);
     Route::patch('jobseeker-applications/{jobPostId}',[JobPostActivityController::class,'updateForJobSeeker']);
 
-
-    Route::post('job-posts/{id}', [JobSeekerLogController::class,'store']);
+    Route::post('job-posts/{id}/save', [JobSeekerLogController::class,'store']);
     Route::delete('job-posts/{id}',[JobSeekerLogController::class,'destroy']);
-    Route::get('jobseekerlogs', [JobSeekerLogController::class,'jobSeekerLogs']);
-    Route::get('jobseekerlogs/{jobPostId}', [JobSeekerLogController::class,'show']);
-    Route::delete('jobseekerlogs/{jobPostId}',[JobSeekerLogController::class,'destroy']);
+
+
+    Route::get('save-jobs', [JobSeekerLogController::class,'getSavedJobs']);
+    Route::get('overview', [JobSeekerAnalyticController::class, 'overview']);
+   
+
+
+
+
+
+
 
     Route::post('employers/{id}/followers',[FollowController::class,'store']);
     Route::delete('employers/{id}/followers', [FollowController::class,'destroy']);
@@ -89,7 +97,6 @@ Route::group([
     Route::get('follow-employers/{id}',[FollowController::class,'show'] );
     Route::delete('follow-employers/{id}',[FollowController::class,'destroy']);
     
-
     Route::post('employers/{id}/reviews', [ReviewController::class,'store']);
     Route::patch('employers/{id}/reviews',[ReviewController::class,'update']);
     Route::delete('employers/{id}/reviews', [ReviewController::class,'destroy']);
@@ -109,33 +116,12 @@ Route::group([
 
     Route::post('logout', [AuthController::class,'logout']);
 
-    Route::get('profile',[EmployerProfileController::class,'profile']);
-    Route::patch('profile',[EmployerProfileController::class,'update']);
+    Route::post('profile',[EmployerProfileController::class,'update']);
+    Route::post('profile/upload_image',[EmployerProfileController::class,'upload_image']);
 
-    Route::get('job-posts/pending',[JobPostController::class,'pendingPosts']);
-    Route::get('job-posts/pending/{id}',[JobPostController::class,'pendingPostById']);
-
-    Route::get('job-posts/approved',[JobPostController::class,'approvedPosts']);
-    Route::get('job-posts/approved/{id}',[JobPostController::class,'approvedPostById']);
-
-    Route::get('job-posts/rejected',[JobPostController::class,'rejectedPosts']);
-    Route::get('job-posts/rejected/{id}',[JobPostController::class,'rejectedPostById']);
-
-    Route::get('job-posts/expired',[JobPostController::class,'expiredPosts']);
-    Route::get('job-posts/expired/{id}',[JobPostController::class,'expiredPostById']);
-
-    Route::get('job-posts/hidden',[JobPostController::class,'hiddenPosts']);
-    Route::get('job-posts/hidden/{id}',[JobPostController::class,'hiddenPostById']);
-
-    Route::get('job-posts/deleted',[JobPostController::class,'deletedPosts']);
-    Route::get('job-posts/deleted/{id}',[JobPostController::class,'deletedPostById']);
-
-    Route::patch('job-posts/{id}/hidden',[JobPostController::class,'hidden']);
-
-    Route::patch('job-posts/{id}/unhidden',[JobPostController::class,'unhidden']);
+    Route::patch('job-posts/{id}/toggleHiddenJob',[JobPostController::class,'toggleHiddenJob']);
 
     Route::get('job-posts/{id}/applications',[JobPostActivityController::class,'employer_applications']);
-
     Route::patch('job-posts/{id}/applications/{jobSeekerId}',[JobPostActivityController::class,'updateForEmployer']);
 
 
@@ -143,11 +129,8 @@ Route::group([
 
     Route::resource('job-posts/{jobPostId}/potentials',PotentialStorageController::class);
 
-    
+    Route::get('overview',[EmployerAnalyticController::class,'overview']);
 
-    
-
-    
 
 });
 
@@ -156,28 +139,21 @@ Route::group([
     'middleware' => ['api', 'auth:api', 'admin'], 
     'prefix' => 'admin'
 ], function ($router) {
-
     Route::resource('job-types',JobTypeController::class);
-
     Route::resource('categories',CategoryController::class);
 
-    Route::get('users',[ManagementUserController::class, 'users']);
-    Route::get('users/{id}', [ManagementUserController::class, 'show']);
-    Route::patch('users/{id}', [ManagementUserController::class, 'update']);
 
-    Route::get('jobseekers', [ManagementJobSeekerController::class,'jobSeekers']);
-    Route::get('jobseekers/{id}', [ManagementJobSeekerController::class,'show']);
+    Route::get("overview", [AdminAnalyticController::class,"overview"]);
+    Route::patch("job-posts/{id}", [JobPostController::class, "updateForAdmin"]);
 
-    Route::get('employers', [ManagementEmployerController::class, 'employers']);
-    Route::get('employers/{id}', [ManagementEmployerController::class, 'show']);
+    Route::delete("job-posts/{id}", [JobPostController::class, "destroyForAdmin"]);
 
-    Route::get('job-posts', [ManagementJobPostController::class, 'jobPosts']);
-    Route::get('job-posts/{id}', [ManagementJobPostController::class, 'show']);
-    Route::patch('job-posts/{id}', [ManagementJobPostController::class, 'update']);
+    Route::get("job-posts", [JobPostController::class, "indexForAdmin"]);
+    Route::get('job-posts/{id}/applications',[JobPostActivityController::class,'admin_applications']);
 
-    
+    Route::get("users", [UserController::class, "index"]);
+    Route::patch("users/{id}",[UserController::class, "update"]);
 
-  
 });
 
 

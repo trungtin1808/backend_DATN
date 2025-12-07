@@ -14,12 +14,10 @@ return new class extends Migration
         Schema::create('job_seeker', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('user_id')->unique();
-            $table->string('name');
             $table->enum('gender', ['male', 'female', 'other'])->nullable();
-            $table->string('email')->unique();
-            $table->string('phone')->unique();
+            $table->string('cv')->nullable();
+            $table->string('cv_name')->nullable();
             $table->date('date_of_birth')->nullable();
-            $table->string('image')->default('jobseeker_default.jpg');
             $table->timestamps();
 
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');

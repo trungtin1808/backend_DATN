@@ -15,7 +15,6 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('job_post_id');
             $table->unsignedBigInteger('job_seeker_id');
-            $table->timestamp('saved_at')->useCurrent();
             $table->timestamps();
 
             $table->unique(['job_seeker_id', 'job_post_id']);

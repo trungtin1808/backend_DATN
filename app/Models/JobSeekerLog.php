@@ -17,7 +17,6 @@ class JobSeekerLog extends Model
     protected $fillable = [
         'job_post_id',
         'job_seeker_id',
-        'saved_at',
     ];
 
     public function jobPost()
