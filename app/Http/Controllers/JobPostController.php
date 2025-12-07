@@ -17,16 +17,6 @@ class JobPostController extends Controller
                     ->where('job_post_status', '!=', 'deleted')
                     ->get();
 
-        if($jobPosts->isEmpty()){
-            return response()->json(
-                [
-                    'success' => false,
-                    'message' => 'JobPost not found'
-                ],
-                404
-
-            );
-        }
         $data = $jobPosts->map(function($post) {
             return $post->toCustomArray();
         });
@@ -51,16 +41,7 @@ class JobPostController extends Controller
                     ->where('job_post_status', 'pending')
                     ->get();
 
-        if($jobPosts->isEmpty()){
-            return response()->json(
-                [
-                    'success' => false,
-                    'message' => 'PendingPost not found'
-                ],
-                404
-
-            );
-        }
+       
         $data = $jobPosts->map(function($post) {
             return $post->toCustomArray();
         });
@@ -85,16 +66,7 @@ class JobPostController extends Controller
                     ->where('job_post_status', 'approved')
                     ->get();
 
-        if($jobPosts->isEmpty()){
-            return response()->json(
-                [
-                    'success' => false,
-                    'message' => 'ApprovedPost not found'
-                ],
-                404
-
-            );
-        }
+        
         $data = $jobPosts->map(function($post) {
             return $post->toCustomArray();
         });
@@ -119,16 +91,7 @@ class JobPostController extends Controller
                     ->where('job_post_status', 'rejected')
                     ->get();
 
-        if($jobPosts->isEmpty()){
-            return response()->json(
-                [
-                    'success' => false,
-                    'message' => 'RejectedPost not found'
-                ],
-                404
-
-            );
-        }
+        
         $data = $jobPosts->map(function($post) {
             return $post->toCustomArray();
         });
@@ -154,16 +117,7 @@ class JobPostController extends Controller
                     ->where('job_post_status', 'expired')
                     ->get();
 
-        if($jobPosts->isEmpty()){
-            return response()->json(
-                [
-                    'success' => false,
-                    'message' => 'ExpiredPost not found'
-                ],
-                404
-
-            );
-        }
+        
         $data = $jobPosts->map(function($post) {
             return $post->toCustomArray();
         });
@@ -186,16 +140,7 @@ class JobPostController extends Controller
                     ->where('job_post_status', 'hidden')
                     ->get();
 
-        if($jobPosts->isEmpty()){
-            return response()->json(
-                [
-                    'success' => false,
-                    'message' => 'HiddenPost not found'
-                ],
-                404
-
-            );
-        }
+        
         $data = $jobPosts->map(function($post) {
             return $post->toCustomArray();
         });
@@ -218,16 +163,7 @@ class JobPostController extends Controller
                     ->where('job_post_status', 'deleted')
                     ->get();
 
-        if($jobPosts->isEmpty()){
-            return response()->json(
-                [
-                    'success' => false,
-                    'message' => 'DeletedPost not found'
-                ],
-                404
-
-            );
-        }
+        
         $data = $jobPosts->map(function($post) {
             return $post->toCustomArray();
         });

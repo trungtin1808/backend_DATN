@@ -7,15 +7,15 @@ use App\Models\JobPost;
 
 class ManagementJobPostController extends Controller
 {
-    public function jobPosts()
+    
+    public function index()
     {
-        $jobPosts = JobPost::all();
-        if ($jobPosts->isEmpty()) {
-            return response()->json([
-                'success' => false,
-                'message' => 'No JobPosts found'
-            ], 404);
-        }
+        $jobPosts = JobPost::with('employer')
+        ->orderBy('id', 'desc')
+        ->get()
+        ->map(function($jobPosts) {
+            return $jobPosts->toCustomArray();   // dùng hàm bạn đã viết
+        });
 
          return response()->json([
             'success' => true,

@@ -160,11 +160,11 @@ Route::group([
     Route::get('employers', [ManagementEmployerController::class, 'employers']);//xem tất cả nhà tuyển dụng
     Route::get('employers/{id}', [ManagementEmployerController::class, 'show']);//xem chi tiết nhà tuyển dụng
 
-    Route::get('job-posts', [ManagementJobPostController::class, 'jobPosts']);//xem tất cả tin tuyển dụng
+
     Route::get('job-posts/{id}', [ManagementJobPostController::class, 'show']);//xem chi tiết tin tuyển dụng
     Route::patch('job-posts/{id}', [ManagementJobPostController::class, 'update']);//cập nhật tin tuyển dụng
 
-    Route::resource('job-posts/{id}',ManagementJobPostController::class);  
+    Route::resource('job-posts',ManagementJobPostController::class);//CRUD quản lý tin tuyển dụng
 });
 
 

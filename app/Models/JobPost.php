@@ -71,7 +71,7 @@ class JobPost extends Model
     {
         return [
             'id' => $this->id,
-            'employer' => $this->employer->company_name,
+            'employer_name' => $this->employer_name,
             'job_type' => $this->jobType->job_type,
             'category' => $this->category->category_name,
             'job_title' => $this->job_title,
@@ -85,5 +85,8 @@ class JobPost extends Model
             'city' => $this->city,
         ];
     }
-    
+    public function getEmployerNameAttribute()
+    {
+        return $this->employer ? $this->employer->company_name : null;
+    }
 }
