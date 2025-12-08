@@ -81,6 +81,12 @@ class JobPostActivityController extends Controller
             );
         }
 
+        $appliedJobList = $appliedJobList->map(function ($item) {
+            $item->jobPost->applicationStatus = $item->apply_status; 
+            return $item;
+            });
+
+
         return response()->json([
         'success' => true,
         'data' => $appliedJobList

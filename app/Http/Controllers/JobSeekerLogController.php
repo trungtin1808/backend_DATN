@@ -71,9 +71,14 @@ class JobSeekerLogController extends Controller
             );
         }
 
-         return response()->json([
-            'success' => true,
-            'data' => $savedJobList
+        $savedJobList = $savedJobList->map(function ($item) {
+        $item->jobPost->isSaved = true;
+        return $item;
+        });
+
+        return response()->json([
+        'success' => true,
+        'data' => $savedJobList,
         ]);
 
     }
