@@ -68,7 +68,7 @@ class JobSeekerAnalyticController extends Controller
         $reviewingTrend = $this->getTrend($reviewingLast7, $reviewingPrev7);
 
         $recentSaves =JobSeekerLog::where('job_seeker_id', $jobSeekerId)
-                                        ->with(['jobPost'])
+                                        ->with(['jobPost','jobPost.employer'])
                                         ->latest()
                                         ->take(5)
                                         ->get();
