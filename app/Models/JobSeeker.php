@@ -27,8 +27,6 @@ class JobSeeker extends Model
         'user_id',
         'gender',
         'date_of_birth',
-        'cv',
-        'cv_name',
     ];
 
     public function user()
@@ -76,9 +74,7 @@ class JobSeeker extends Model
         return $this->hasMany(Follow::class, 'job_seeker_id', 'id');
     }
 
-    public function potentialStorages()
-    {
-        return $this->hasMany(PotentialStorage::class, 'job_seeker_id', 'id');
-    }
+    
+
 
 }

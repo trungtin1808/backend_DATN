@@ -10,6 +10,8 @@ use App\Models\JobPost;
 use App\Models\Review;
 use App\Models\Follow;
 use App\Models\JobPostActivity;
+use App\Models\Notification;
+use App\Models\PotentialStorage;
 
 class Employer extends Model
 {
@@ -56,6 +58,14 @@ class Employer extends Model
             'id',            // Employer.id
             'id'             // JobPost.id
         );
+    }
+
+    public function notifications(){
+        return $this->hasMany(Notification::class,'employer_id', 'id');
+    }
+
+    public function storage(){
+        return $this->hasMany(PotentialStorage::class,'employer_id', 'id');
     }
     
 }

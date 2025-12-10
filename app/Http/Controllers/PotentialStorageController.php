@@ -60,28 +60,13 @@ class PotentialStorageController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request, string $jobPostId)
+    public function store(Request $request)
     {
         $employer = auth()->user()->employer;
-        $jobPost = JobPost::find($jobPostId);
+        $jobSeeker = JobSeeker::find($request->job_seeker_id);
+       
 
-        if (!$jobPost) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Bài đăng không tồn tại.'
-            ], 404);
-        }
 
-        if ($jobPost->employer_id !== $employer->id) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Bạn không có quyền luu tru ung vien tiem nang cho bai dang nay.'
-            ], 403);
-        }
-
-        $jobSeekerId = $request->jobSeekerId;
-
-        $jobSeeker = $jobPost->activities()->where("job_seeker_id", $jobSeekerId)->first();
 
         if(!$jobSeeker){
             return response()->json(
@@ -95,16 +80,15 @@ class PotentialStorageController extends Controller
         }
 
         $potentialJobSeeker = PotentialStorage::create([
-            "job_post_id" => $jobPostId,
-            "job_seeker_id" => $jobSeekerId
+            "employer_id" => $employer->id,
+            "job_seeker_id" => $jobSeeker->id,
         ]);
 
         $potentialJobSeeker->refresh();
 
         return response()->json([
             'success' => true,
-            'message' => 'Tao ung vien tiem nang thanh cong!',
-            'data' => $potentialJobSeeker
+            'message' => 'created successfully',
          ]);
 
 

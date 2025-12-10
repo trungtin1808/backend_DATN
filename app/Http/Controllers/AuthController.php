@@ -10,6 +10,9 @@ use Illuminate\Support\Facades\Hash;
 use App\Http\Requests\RegisterRequest;
 use App\Models\JobSeeker;
 use App\Models\Employer;
+use App\Models\Notification;
+use App\Models\NotificationJobSeeker;
+
 
 
 
@@ -137,6 +140,9 @@ class AuthController extends \Illuminate\Routing\Controller
         $user = auth()->user();
         if($user->role == "jobseeker"){
             $jobseeker = $user->jobseeker;
+            $count = NotificationJobSeeker::where("job_seeker_id", $jobseeker->id)
+                            ->where("is_read", 0)
+                            ->count();
             return response()->json([
             'token_type' => 'bearer',
             'expires_in' => auth()->factory()->getTTL() * 60,
@@ -156,8 +162,7 @@ class AuthController extends \Illuminate\Routing\Controller
                 'job_seeker_id' => $jobseeker->id,
                 'gender' => $jobseeker->gender ?? '',
                 'date_of_birth' => $jobseeker->date_of_birth ?? '',
-                'cv' => $jobseeker->cv ?? '',
-                'cv_name' => $jobseeker->cv_name ?? '',
+                'count' => $count,
 
             ]
 
@@ -168,6 +173,9 @@ class AuthController extends \Illuminate\Routing\Controller
 
         } else if($user->role == "employer"){
             $employer = $user->employer;
+            $count = Notification::where("employer_id", $employer->id)
+                                    ->where("is_read", 0)
+                                    ->count();
              return response()->json([
             
             'token_type' => 'bearer',
@@ -191,6 +199,7 @@ class AuthController extends \Illuminate\Routing\Controller
                 'profile_description' => $employer->profile_description ?? '',
                 'establishment_date' => $employer->establishment_date ?? '',
                 'company_website_url' => $employer->company_website_url ?? '',
+                'count' => $count,
 
             ]
             

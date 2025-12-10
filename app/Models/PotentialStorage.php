@@ -14,7 +14,7 @@ class PotentialStorage extends Model
 
     protected $table = 'potential_storage';
     protected $fillable = [
-        'job_post_id',
+        'employer_id',
         'job_seeker_id',
     ];
 
@@ -23,9 +23,9 @@ class PotentialStorage extends Model
         return $this->belongsTo(JobSeeker::class, 'job_seeker_id', 'id');
     }
 
-    public function jobPost()
+    public function employer()
     {
-        return $this->belongsTo(JobPost::class, 'job_post_id', 'id');
+        return $this->belongsTo(JobPost::class, 'employer_id', 'id');
     }
 
     

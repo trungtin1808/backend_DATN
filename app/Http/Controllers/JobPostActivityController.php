@@ -5,6 +5,9 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\JobPostActivity;
 use App\Models\JobPost;
+use App\Models\Notification;
+use App\Models\NotificationJobSeeker;
+
 
 class JobPostActivityController extends Controller
 {
@@ -46,6 +49,17 @@ class JobPostActivityController extends Controller
             "job_post_id"   => $jobPost->id,
             "link_cv"         => $defaultCv->link_cv,
         ]);
+
+        Notification::create([
+            "job_seeker_id" => $jobSeeker->id,
+            "job_post_id" => $jobPost->id,
+            "employer_id" => $jobPost->employer->id,
+            "message" => $jobSeeker->user->name . " has applied for the job " . $jobPost->job_title,
+        ]);
+
+
+
+
 
         return response()->json([
         'success' => true,
@@ -164,7 +178,6 @@ class JobPostActivityController extends Controller
     {
         $employer = auth()->user()->employer;
         $jobPost = JobPost::where('id', $jobPostId)
-                  ->where('job_post_status','!=', 'deleted')
                   ->first();
 
         if (!$jobPost) {
@@ -196,8 +209,25 @@ class JobPostActivityController extends Controller
         }
 
         $application->apply_status = $request->apply_status;
+        
+        
+
+        
+        NotificationJobSeeker::create([
+
+            "job_seeker_id" => $jobSeekerId,
+            "job_post_id" => $jobPostId,
+            "employer_id" => $employer->id,
+            "message" =>  $employer->user->name . " from " . 
+             $employer->company_name . " " . 
+             $request->apply_status . " the job posting: " . $jobPost->job_title . ".",   
+            ]);
+
 
         $application->save();
+        
+
+
 
         return response()->json([
         'success' => true,

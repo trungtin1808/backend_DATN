@@ -13,14 +13,17 @@ return new class extends Migration
     {
         Schema::create('potential_storage', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('job_post_id');
+            $table->unsignedBigInteger('employer_id');
             $table->unsignedBigInteger('job_seeker_id');
-            $table->timestamps();
 
-            $table->unique(['job_post_id', 'job_seeker_id']);
+
+        
             
             $table->foreign('job_seeker_id')->references('id')->on('job_seeker')->onDelete('cascade');
-            $table->foreign('job_post_id')->references('id')->on('job_post')->onDelete('cascade');
+            $table->foreign('employer_id')->references('id')->on('company')->onDelete('cascade');
+
+            
+            $table->timestamps();
         });
     }
 

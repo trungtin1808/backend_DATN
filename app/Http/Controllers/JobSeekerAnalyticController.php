@@ -78,8 +78,8 @@ class JobSeekerAnalyticController extends Controller
               ->where('job_post_status', '!=', 'deleted');
         })
         ->with([
-        'jobSeeker.user',  // load user để có avatar
-        'jobPost'
+        'jobPost',  // load user để có avatar
+        'jobPost.employer'
              ])
         ->latest()
         ->take(5)

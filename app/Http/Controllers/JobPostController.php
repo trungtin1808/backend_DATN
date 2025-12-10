@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\JobPost;
 use App\Models\JobSeekerLog;
 use App\Models\JobPostActivity;
+use App\Models\Notification;
 
 class JobPostController extends Controller
 {
@@ -200,6 +201,8 @@ class JobPostController extends Controller
 
         $jobPost->job_post_status = $request->job_post_status;
         $jobPost->save();
+
+
 
          return response()->json([
             'success' => true,

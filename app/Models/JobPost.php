@@ -58,16 +58,9 @@ class JobPost extends Model
         return $this->hasMany(JobPostActivity::class, 'job_post_id', 'id');
     }
 
-    // public function logs()
-    // {
-    //     return $this->hasMany(JobSeekerLog::class, 'job_post_id', 'id');
-    // }
+    
 
-    public function potentialStorages()
-    {
-        return $this->hasMany(PotentialStorage::class, 'job_post_id', 'id');
-    }
-
+    
     
     
 }

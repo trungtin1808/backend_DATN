@@ -21,6 +21,8 @@ use App\Http\Controllers\EmployerAnalyticController;
 use App\Http\Controllers\AdminAnalyticController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\JobSeekerAnalyticController;
+use App\Http\Controllers\NotificationForEmployer;
+use App\Http\Controllers\NotificationForJobSeeker;
 
 
 
@@ -83,11 +85,12 @@ Route::group([
 
     Route::get('save-jobs', [JobSeekerLogController::class,'getSavedJobs']);
     Route::get('overview', [JobSeekerAnalyticController::class, 'overview']);
+
+    Route::get('notifications', [NotificationForJobSeeker::class, 'getNotifications']);
+    Route::patch('notifications/{id}', [NotificationForJobSeeker::class, 'update']);
+
+    Route::delete('notifications/{id}', [NotificationForJobSeeker::class, 'destroy']);
    
-
-
-
-
 
 
 
@@ -102,6 +105,8 @@ Route::group([
     Route::delete('employers/{id}/reviews', [ReviewController::class,'destroy']);
     Route::get('reviewed', [ReviewController::class,'reviewed']);
     Route::get('reviewed/{id}', [ReviewController::class,'show']);
+
+
     
 
     
@@ -127,9 +132,18 @@ Route::group([
 
     Route::resource('job-posts',JobPostController::class);
 
-    Route::resource('job-posts/{jobPostId}/potentials',PotentialStorageController::class);
 
     Route::get('overview',[EmployerAnalyticController::class,'overview']);
+
+    Route::get('notifications', [NotificationForEmployer::class, 'getNotifications']);
+
+    Route::get('notifications/count_unread', [NotificationForEmployer::class, 'getCountUnread']);
+
+    Route::patch('notifications/{id}', [NotificationForEmployer::class, 'update']);
+
+    Route::delete('notifications/{id}', [NotificationForEmployer::class, 'destroy']);
+
+    Route::post('storages', [PotentialStorageController::class, 'store']);
 
 
 });

@@ -15,8 +15,6 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('user_id')->unique();
             $table->enum('gender', ['male', 'female', 'other'])->nullable();
-            $table->string('cv')->nullable();
-            $table->string('cv_name')->nullable();
             $table->date('date_of_birth')->nullable();
             $table->timestamps();
 

@@ -77,21 +77,6 @@ class JobSeekerProfileController extends Controller
 
         }
 
-        if($request->hasFile('cv')){
-
-            
-
-            if ($jobSeeker->cv) {
-                Storage::disk('public')->delete($jobSeeker->cv);
-            }
-
-            $cvPath = $request->file('cv')->store('cvs', 'public');
-            $jobSeeker->cv = $cvPath;
-        }
-
-        if($request->has('cv_name')){
-            $jobSeeker->cv_name = $request->cv_name;
-        }
 
         if($request->hasFile('avatar')){
 
@@ -142,8 +127,6 @@ class JobSeekerProfileController extends Controller
                 'job_seeker_id' => $jobSeeker->id,
                 'gender' => $jobSeeker->gender ?? '',
                 'date_of_birth' => $jobSeeker->date_of_birth ?? '',
-                'cv' => $jobSeeker->cv ?? '',
-                'cv_name' => $jobSeeker->cv_name ?? '',
         ],
 
         ], 200);
